@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huation.myweb.mapper.MemberMapper">
+
+	<!-- 회원가입 -->
+	<insert id="insertMember" parameterType="MemberVO">
+		INSERT INTO member (member_id, passwd, email) 
+		VALUES (#{ memberId }, #{ passwd }, #{ email })	
+	</insert>
+	
+	<!-- 로그인 -->
+	<select id="selectMemberByIdAndPasswd" parameterType="MemberVO" resultType="MemberVO">
+		SELECT member_id, passwd, email, reg_date, active, user_type
+		FROM member
+		WHERE member_id = #{ memberId } AND passwd = #{ passwd } AND active = '1'
+	</select>
+	
+</mapper>
