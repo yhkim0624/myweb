@@ -34,9 +34,14 @@ public class AccountController {
 	public String register(MemberVO member) {
 		
 		System.out.println(member);
-		memberService.registerMember(member);
 		
-		return "redirect:/login";
+		if (member == null) {
+			return "redirect:/register";
+		} else {			
+			memberService.registerMember(member);
+			
+			return "redirect:/login";
+		}
 	}
 	
 	@PostMapping(path = { "/login" })
