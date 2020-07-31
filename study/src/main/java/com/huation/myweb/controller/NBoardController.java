@@ -55,19 +55,27 @@ public class NBoardController {
 			@RequestParam(required = false) String searchKey,
 			HttpServletRequest req,
 			Model model) { // 목록보기
+
+		HashMap<String, Object> params = new HashMap<>();
+		params.put("searchType", searchType);
+		params.put("searchKey", searchKey);
+		int boardCount = nBoardService.findNBoardCount(params); //전체 글 개수
 		
 		int pageSize = 10;
 		int pagerSize = 5;
-		HashMap<String, Object> params = new HashMap<>();
-		int beginning = (pageNo - 1) * pageSize + 1;
+		int beginning = boardCount - (pageNo -1) * pageSize;
+		int end = (boardCount - pageNo * pageSize) + 1;
+		
+		if (end < 1) end = 1;
+		
+		System.out.printf("[%d][%d][%d]", boardCount, beginning, end);
+		System.out.printf("[%s][%s]", searchType, searchKey);
+		
 		params.put("beginning", beginning);
-		params.put("end", beginning + pageSize);
-		params.put("searchType", searchType);
-		params.put("searchKey", searchKey);
+		params.put("end", end);
 				
 		//데이터 조회 (서비스에 요청)
 		List<NBoardVO> boards = nBoardService.findNBoardWithPaging(params);
-		int boardCount = nBoardService.findNBoardCount(params); //전체 글 개수
 
 		ThePager2 pager = 
 			new ThePager2(boardCount, pageNo, pageSize, pagerSize, 

@@ -8,6 +8,7 @@
 
 	<!-- sql : 재사용 할 수 있는 SQL 블럭 -->
 	<sql id="searchCondition">
+		<!-- 동적 SQL 사용 -->
 		<trim suffix="AND">
 	    	<choose>
 	    		<when test="searchType == 'T'.toString()">
@@ -23,7 +24,7 @@
 	    			writer LIKE '%'||#{searchKey}||'%'
 	    		</when>
 	    	</choose>
-		</trim>
+    	</trim>
 	</sql>
 
 	<resultMap type="NBoardVO" id="nBoardMap">
@@ -69,20 +70,23 @@
 	
 	<!-- 목록보기(페이징) -->
 	<select id="selectNBoardWithPaging" 
-			resultType="NBoardVO" parameterType="hashmap">
-		
-		SELECT board_no, title, writer, reg_date, read_count, deleted, group_no, step_no, depth
-		FROM
-		(
-		    SELECT rownum idx, board_no, title, writer, reg_date, read_count, deleted, group_no, step_no, depth
-		    FROM nboard
-		    WHERE    
-		    	<include refid="searchCondition" />
-		    	<![CDATA[ rownum < #{ end } ]]>
-		    ORDER BY board_no DESC
+			resultType="NBoardVO" parameterType="hashmap">		
+		SELECT *
+		FROM (
+		    SELECT rownum idx, a.*
+		    FROM (
+		    	SELECT *
+		    	FROM nboard
+		    	WHERE 
+		    		<include refid="searchCondition" />
+		    		deleted = '0'
+		    	ORDER BY board_no
+		    ) a
 		)
-		WHERE idx >= #{ beginning }
-		
+		WHERE
+			<![CDATA[ idx <= #{ beginning } ]]>
+			AND idx >= #{ end }
+		ORDER BY board_no DESC
 	</select>
 	
 	<!-- 전체 게시물 갯수 조회 -->
