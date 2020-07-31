@@ -1,0 +1,104 @@
+CREATE TABLE member
+(
+	member_id varchar2 (20) not null primary key,
+	passwd varchar2(100) not null,
+	email varchar2 (50) not null,
+	reg_date date default(sysdate),	
+	active char(1) default ('1'), -- char(1) : java의 boolean과 호환
+	user_type varchar2 (20) default ('user') -- ('user', 'admin')
+);
+
+CREATE TABLE nboard
+(
+    board_no number not null primary key,
+    title varchar2(100) not null,
+    writer varchar2(20) not null,
+    content varchar2(2000) not null,
+    reg_date date default(SYSDATE),
+    read_count number default(0),
+    deleted char(1) default('0'),
+    group_no number not null,
+    step_no number not null,
+    depth number default(0)
+);
+
+ALTER TABLE nboard
+ADD CONSTRAINT fk_member_board
+FOREIGN KEY (writer) REFERENCES member (member_id);
+
+CREATE TABLE nboardcomment
+(
+    comment_no number not null primary key,
+    board_no number not null,
+    writer varchar2(20) not null,
+    content varchar2(500) not null,
+    reg_date date default(SYSDATE),
+    group_no number not null,
+    step_no number not null,
+    depth number default(0)
+);
+
+ALTER TABLE nboardcomment
+ADD CONSTRAINT fk_board_comment
+FOREIGN KEY (board_no) REFERENCES nboard (board_no);
+
+ALTER TABLE nboardcomment
+ADD CONSTRAINT fk_member_comment
+FOREIGN KEY (writer) REFERENCES member (member_id);
+
+CREATE TABLE aboard
+(
+    board_no number not null primary key,
+    title varchar2(100) not null,
+    writer varchar2(20) not null,
+    content varchar2(2000) not null,
+    reg_date date default(SYSDATE),
+    read_count number default(0),
+    deleted char(1) default('0'),
+    group_no number not null,
+    step_no number not null,
+    depth number default(0)
+);
+
+ALTER TABLE aboard
+ADD CONSTRAINT fk_member_aboard
+FOREIGN KEY (writer) REFERENCES member (member_id);
+
+CREATE TABLE aboardcomment
+(
+    comment_no number not null primary key,
+    board_no number not null,
+    writer varchar2(20) not null,
+    content varchar2(500) not null,
+    reg_date date default(SYSDATE),
+    group_no number not null,
+    step_no number not null,
+    depth number default(0)
+);
+
+ALTER TABLE aboardcomment
+ADD CONSTRAINT fk_aboard_comment
+FOREIGN KEY (board_no) REFERENCES aboard (board_no);
+
+ALTER TABLE aboardcomment
+ADD CONSTRAINT fk_member_acomment
+FOREIGN KEY (writer) REFERENCES member (member_id);
+
+CREATE TABLE uploadfile
+(
+    upload_file_no number not null primary key,
+    board_no number not null,
+    saved_file_name varchar2(200) not null,
+    user_file_name varchar2(100) not null,
+    download_count number default(0)
+);
+
+ALTER TABLE uploadfile
+ADD CONSTRAINT fk_nboard_uploadfile
+FOREIGN KEY (board_no) REFERENCES nboard (board_no);
+
+CREATE SEQUENCE nboard_sequence;
+
+CREATE SEQUENCE upload_file_sequence;
+
+CREATE SEQUENCE nboard_comment_sequence;

@@ -47,7 +47,6 @@ public class AccountController {
 	@PostMapping(path = { "/login" })
 	public String login(MemberVO member, HttpSession session) {
 		
-		System.out.println(member);
 		MemberVO member2 = memberService.loginMember(member);
 		System.out.println(member2);
 		session.setAttribute("loginuser", member2);

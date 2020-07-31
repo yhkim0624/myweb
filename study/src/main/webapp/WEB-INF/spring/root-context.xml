@@ -43,7 +43,10 @@
 	
 	<bean id="accountService"
 		  class="com.huation.myweb.service.MemberServiceImpl">
-		<property name="memberMapper" ref="memberMapper" />
+	</bean>	
+
+	<bean id="nBoardService"
+		class="com.huation.myweb.service.NBoardServiceImpl">
 	</bean>
 
 </beans>

@@ -11,6 +11,9 @@
 	
 	<typeAliases>
 		<typeAlias type="com.huation.myweb.vo.MemberVO" alias="MemberVO" />
+		<typeAlias type="com.huation.myweb.vo.NBoardVO" alias="NBoardVO" />
+		<typeAlias type="com.huation.myweb.vo.UploadFileVO" alias="UploadFileVO" />
+		<typeAlias type="com.huation.myweb.vo.NBoardCommentVO" alias="NBoardCommentVO" />
 	</typeAliases>
 	
 </configuration>

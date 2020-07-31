@@ -1,5 +1,6 @@
 package com.huation.myweb.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -7,13 +8,12 @@ import com.huation.myweb.common.Util;
 import com.huation.myweb.mapper.MemberMapper;
 import com.huation.myweb.vo.MemberVO;
 
-import lombok.Setter;
-
 @Service
 @Qualifier("memberService")
 public class MemberServiceImpl implements MemberService {
 
-	@Setter
+	@Autowired
+	@Qualifier("memberMapper")
 	private MemberMapper memberMapper;
 
 	@Override

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huation.myweb.mapper.NBoardMapper">
+
+	<!-- sql : 재사용 할 수 있는 SQL 블럭 -->
+	<sql id="searchCondition">
+		<trim suffix="AND">
+	    	<choose>
+	    		<when test="searchType == 'T'.toString()">
+	    			title LIKE '%'||#{searchKey}||'%'
+	    		</when>
+	    		<when test="searchType == 'C'.toString()">
+	    			content LIKE '%'||#{searchKey}||'%'
+	    		</when>
+	    		<when test="searchType == 'TC'.toString()">
+	    			( title LIKE '%'||#{searchKey}||'%' OR content LIKE '%'||#{searchKey}||'%' )
+	    		</when>
+	    		<when test="searchType == 'W'.toString()">
+	    			writer LIKE '%'||#{searchKey}||'%'
+	    		</when>
+	    	</choose>
+		</trim>
+	</sql>
+
+	<resultMap type="NBoardVO" id="nBoardMap">
+		<id column="board_no" property="boardNo" />
+		<result column="title" property="title" />
+		<result column="writer" property="writer" />
+		<result column="content" property="content" />
+		<result column="reg_date" property="regDate" />
+		<result column="read_count" property="readCount" />
+		<result column="deleted" property="deleted" />
+		<result column="group_no" property="groupNo" />
+		<result column="step_no" property="stepNo" />
+		<result column="depth" property="depth" />
+		<collection column="board_no" property="uploadFiles" resultMap="uploadFileMap"/>
+	</resultMap>
+	
+	<resultMap type="UploadFileVO" id="uploadFileMap">
+		<id column="upload_file_no" property="uploadFileNo" />
+		<result column="saved_file_name" property="savedFileName" />
+		<result column="user_file_name" property="userFileName" />
+		<result column="download_count" property="downloadCount" />
+	</resultMap>
+
+	<!-- 글쓰기 -->
+	<insert id="insertNBoard" parameterType="NBoardVO"
+				useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO nboard (
+							board_no, title, writer, content,
+							group_no, step_no, depth
+		)
+		VALUES (
+				nboard_sequence.nextval, #{ title }, #{ writer }, #{ content },
+				nboard_sequence.currval, 1, 0
+		)	
+	</insert>
+	
+	<!-- 목록보기 -->
+<!-- 	<select id="selectNBoards" resultType="NBoardVO">
+		SELECT board_no, title, writer, reg_date, read_count, deleted, group_no, step_no, depth
+		FROM nboard
+		ORDER BY board_no DESC
+	</select> -->
+	
+	<!-- 목록보기(페이징) -->
+	<select id="selectNBoardWithPaging" 
+			resultType="NBoardVO" parameterType="hashmap">
+		
+		SELECT board_no, title, writer, reg_date, read_count, deleted, group_no, step_no, depth
+		FROM
+		(
+		    SELECT rownum idx, board_no, title, writer, reg_date, read_count, deleted, group_no, step_no, depth
+		    FROM nboard
+		    WHERE    
+		    	<include refid="searchCondition" />
+		    	<![CDATA[ rownum < #{ end } ]]>
+		    ORDER BY board_no DESC
+		)
+		WHERE idx >= #{ beginning }
+		
+	</select>
+	
+	<!-- 전체 게시물 갯수 조회 -->
+	<select id="selectNBoardCount" parameterType="hashmap" resultType="int">
+		SELECT COUNT(*) 
+		FROM nboard
+		WHERE 
+			<include refid="searchCondition" />
+			deleted = '0'
+	</select>
+	
+	<!-- 상세보기 -->
+	<select id="selectNBoardByNBoardNo" parameterType="int" resultMap="nBoardMap">
+		SELECT n.board_no, n.title, n.writer, n.content, n.reg_date, n.read_count, n.deleted,
+				n.group_no, n.step_no, n.depth,
+				f.upload_file_no, f.saved_file_name, f.user_file_name, f.download_count
+		FROM nboard n
+		LEFT OUTER JOIN uploadfile f
+		ON n.board_no = f.board_no
+		WHERE n.board_no = #{ nBoardNo } AND n.deleted = '0'
+	</select>
+	
+	<!-- 조회수 증가 -->
+	<update id="updateNBoardReadCount" parameterType="int">
+		UPDATE nboard
+		SET read_count = read_count + 1
+		WHERE board_no = #{ boardNo }
+	</update>
+	
+	<!-- 삭제하기(update : deleted='1') -->
+	<update id="deleteNBoardByNBoardNo" parameterType="int">
+		UPDATE nboard
+		SET deleted = '1'
+		WHERE board_no = #{ nBoardNo }
+	</update>
+	
+	<!-- 수정하기 -->
+	<update id="updateNBoardByNBoardNo" parameterType="NBoardVO">
+		UPDATE nboard
+		SET title = #{ title }, content = #{ content }
+		WHERE board_no = #{ boardNo }
+	</update>
+	
+	<!-- 파일 업로드 -->
+	<insert id="insertUploadFile" parameterType="UploadFileVO">
+		INSERT INTO uploadfile ( upload_file_no, board_no, saved_file_name, user_file_name )
+		VALUES ( upload_file_sequence.nextval, #{ boardNo }, #{ savedFileName }, #{ userFileName } )
+	</insert>
+	
+	<!-- 파일 조회 -->
+	<select id="selectUploadFileByFileNo" parameterType="int" resultType="UploadFileVO">
+		SELECT *
+		FROM uploadfile
+		WHERE upload_file_no = #{ fileNo }
+	</select>
+	
+</mapper>
