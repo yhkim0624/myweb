@@ -24,7 +24,9 @@
             <div id="inputcontent">
                 <div id="inputmain">
                     <div class="inputsubtitle">게시물 작성</div>
-                    <form id="writeForm" action="write" method="post" enctype="multipart/form-data">
+                    <form id="writeForm" action="rewrite" method="post" enctype="multipart/form-data">
+                    	<input type="hidden" name="prNBoardNo" value="${ nBoardNo }" />
+                    	<input type="hidden" name="stepNo" value="${ stepNo }" />
                         <table>
                             <tr style="width:600px">
                                 <th>제목</th>

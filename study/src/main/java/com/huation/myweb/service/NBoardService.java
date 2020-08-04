@@ -3,6 +3,7 @@ package com.huation.myweb.service;
 import java.util.HashMap;
 import java.util.List;
 
+import com.huation.myweb.vo.NBoardCommentVO;
 import com.huation.myweb.vo.NBoardVO;
 import com.huation.myweb.vo.UploadFileVO;
 
@@ -25,5 +26,15 @@ public interface NBoardService {
 	List<NBoardVO> findNBoardWithPaging(HashMap<String, Object> params);
 
 	int findNBoardCount(HashMap<String, Object> params);
+
+	int rewriteNBoard(NBoardVO nBoard, int prNBoardNo);
+
+	int writeReply(NBoardCommentVO comment);
+
+	void deleteReply(int commentNo);
+
+	NBoardCommentVO showReplyDetail(int rno);
+
+	void modifyReply(NBoardCommentVO comment);
 	
 }

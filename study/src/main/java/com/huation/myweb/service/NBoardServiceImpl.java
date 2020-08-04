@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.huation.myweb.mapper.NBoardMapper;
+import com.huation.myweb.vo.NBoardCommentVO;
 import com.huation.myweb.vo.NBoardVO;
 import com.huation.myweb.vo.UploadFileVO;
 
@@ -23,6 +24,29 @@ public class NBoardServiceImpl implements NBoardService {
 	public int writeNBoard(NBoardVO nBoard) {
 		
 		nBoardMapper.insertNBoard(nBoard);
+		int newNum = nBoard.getBoardNo();
+		
+		return newNum;
+	}
+
+	@Override
+	public int rewriteNBoard(NBoardVO nBoard, int prNBoardNo) {
+		
+		NBoardVO prNBoard = nBoardMapper.selectNBoardByNBoardNo(prNBoardNo);
+		
+		for (int i = 0; i < nBoard.getStepNo(); i++) {
+			nBoard.setTitle("RE : " + nBoard.getTitle());
+		}
+
+		nBoard.setTitle("└" + nBoard.getTitle());
+		
+		nBoard.setGroupNo(prNBoard.getGroupNo());
+		nBoard.setStepNo(prNBoard.getStepNo() + 1);
+		nBoard.setDepth(prNBoard.getDepth() + 1);
+		
+		nBoardMapper.updateSno(prNBoard);
+		
+		nBoardMapper.insertReNBoard(nBoard);
 		int newNum = nBoard.getBoardNo();
 		
 		return newNum;
@@ -80,6 +104,33 @@ public class NBoardServiceImpl implements NBoardService {
 	public int findNBoardCount(HashMap<String, Object> params) {
 		
 		return nBoardMapper.selectNBoardCount(params);
+	}
+
+	@Override
+	public int writeReply(NBoardCommentVO comment) {
+		
+		int newNum = comment.getCommentNo();
+		nBoardMapper.insertNBoardComment(comment);
+		
+		return newNum;
+	}
+
+	@Override
+	public void deleteReply(int commentNo) {
+		
+		nBoardMapper.deleteComment(commentNo);
+	}
+
+	@Override
+	public NBoardCommentVO showReplyDetail(int rno) {
+		
+		return nBoardMapper.selectNBoardCommentByCommentNo(rno);
+	}
+
+	@Override
+	public void modifyReply(NBoardCommentVO comment) {
+		
+		nBoardMapper.updateNBoardComment(comment);
 	}
 	
 }

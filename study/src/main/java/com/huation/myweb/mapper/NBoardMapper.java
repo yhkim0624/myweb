@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.huation.myweb.vo.NBoardCommentVO;
 import com.huation.myweb.vo.NBoardVO;
 import com.huation.myweb.vo.UploadFileVO;
 
@@ -32,5 +33,17 @@ public interface NBoardMapper {
 	UploadFileVO selectUploadFileByFileNo(int fileNo);
 
 	int selectNBoardCount(HashMap<String, Object> params);
+
+	void updateSno(NBoardVO prNBoard);
+
+	void insertReNBoard(NBoardVO nBoard);
+
+	void insertNBoardComment(NBoardCommentVO comment);
+
+	void deleteComment(int commentNo);
+
+	NBoardCommentVO selectNBoardCommentByCommentNo(int commentNo);
+
+	void updateNBoardComment(NBoardCommentVO comment);
 
 }
