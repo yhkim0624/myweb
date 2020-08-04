@@ -1,5 +1,6 @@
 package com.huation.myweb.service;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 
@@ -36,5 +37,9 @@ public interface NBoardService {
 	NBoardCommentVO showReplyDetail(int rno);
 
 	void modifyReply(NBoardCommentVO comment);
+
+	int writeReReply(int prCommentNo, NBoardCommentVO comment);
+
+	void excelUpload(File file);
 	
 }

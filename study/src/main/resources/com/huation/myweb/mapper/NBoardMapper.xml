@@ -10,21 +10,21 @@
 	<sql id="searchCondition">
 		<!-- 동적 SQL 사용 -->
 		<trim suffix="">
-	    	<choose>
-	    		<when test="searchType == 'T'.toString()">
-	    			title LIKE '%'||#{searchKey}||'%'
-	    		</when>
-	    		<when test="searchType == 'C'.toString()">
-	    			content LIKE '%'||#{searchKey}||'%'
-	    		</when>
-	    		<when test="searchType == 'TC'.toString()">
-	    			( title LIKE '%'||#{searchKey}||'%' OR content LIKE '%'||#{searchKey}||'%' )
-	    		</when>
-	    		<when test="searchType == 'W'.toString()">
-	    			writer LIKE '%'||#{searchKey}||'%'
-	    		</when>
-	    	</choose>
-    	</trim>
+			<choose>
+				<when test="searchType == 'T'.toString()">
+					title LIKE '%'||#{searchKey}||'%'
+				</when>
+				<when test="searchType == 'C'.toString()">
+					content LIKE '%'||#{searchKey}||'%'
+				</when>
+				<when test="searchType == 'TC'.toString()">
+					( title LIKE '%'||#{searchKey}||'%' OR content LIKE '%'||#{searchKey}||'%' )
+				</when>
+				<when test="searchType == 'W'.toString()">
+					writer LIKE '%'||#{searchKey}||'%'
+				</when>
+			</choose>
+		</trim>
 	</sql>
 
 	<resultMap type="NBoardVO" id="nBoardMap">
@@ -38,17 +38,19 @@
 		<result column="group_no" property="groupNo" />
 		<result column="step_no" property="stepNo" />
 		<result column="depth" property="depth" />
-		<collection column="board_no" property="uploadFiles" resultMap="uploadFileMap"/>
-		<collection column="board_no" property="nBoardComments" resultMap="nBoardCommentMap"/>
+		<collection column="board_no" property="uploadFiles"
+			resultMap="uploadFileMap" />
+		<collection column="board_no" property="nBoardComments"
+			resultMap="nBoardCommentMap" />
 	</resultMap>
-	
+
 	<resultMap type="UploadFileVO" id="uploadFileMap">
 		<id column="upload_file_no" property="uploadFileNo" />
 		<result column="saved_file_name" property="savedFileName" />
 		<result column="user_file_name" property="userFileName" />
 		<result column="download_count" property="downloadCount" />
 	</resultMap>
-	
+
 	<resultMap type="NBoardCommentVO" id="nBoardCommentMap">
 		<id column="comment_no" property="commentNo" />
 		<result column="replier" property="replier" />
@@ -62,30 +64,28 @@
 
 	<!-- 글쓰기 -->
 	<insert id="insertNBoard" parameterType="NBoardVO"
-				useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
-		INSERT INTO nboard (
-							board_no, title, writer, content,
-							group_no, step_no, depth
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO
+		nboard (
+			board_no, title, writer, content, group_no, step_no, depth
 		)
 		VALUES (
-				nboard_sequence.nextval, #{ title }, #{ writer }, #{ content },
-				nboard_sequence.currval, 1, 0
-		)	
+			nboard_sequence.nextval, #{ title }, #{ writer }, #{ content }, nboard_sequence.currval, 1, 0
+		)
 	</insert>
-	
+
 	<!-- 답변글쓰기 -->
 	<insert id="insertReNBoard" parameterType="NBoardVO"
-				useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
-		INSERT INTO nboard (
-							board_no, title, writer, content,
-							group_no, step_no, depth
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO
+		nboard (
+			board_no, title, writer, content, group_no, step_no, depth
 		)
 		VALUES (
-				nboard_sequence.nextval, #{ title }, #{ writer }, #{ content },
-				#{ groupNo }, #{ stepNo }, #{ depth }
+			nboard_sequence.nextval, #{ title }, #{ writer }, #{ content }, #{ groupNo }, #{ stepNo }, #{ depth }
 		)
 	</insert>
-	
+
 	<update id="updateSno" parameterType="NBoardVO">
 		<![CDATA[
 		UPDATE nboard
@@ -93,133 +93,146 @@
 		WHERE group_no = #{ groupNo } AND step_no > #{ stepNo }
 		]]>
 	</update>
-	
+
 	<!-- 목록보기 -->
-<!-- 	<select id="selectNBoards" resultType="NBoardVO">
-		SELECT board_no, title, writer, reg_date, read_count, deleted, group_no, step_no, depth
-		FROM nboard
-		ORDER BY board_no DESC
-	</select> -->
-	
+	<!-- <select id="selectNBoards" resultType="NBoardVO"> SELECT board_no, 
+		title, writer, reg_date, read_count, deleted, group_no, step_no, depth FROM 
+		nboard ORDER BY board_no DESC </select> -->
+
 	<!-- 목록보기(페이징) -->
-	<select id="selectNBoardWithPaging" 
-			resultType="NBoardVO" parameterType="hashmap">		
+	<select id="selectNBoardWithPaging" resultType="NBoardVO" parameterType="hashmap">
 		SELECT *
 		FROM (
-		    SELECT rownum idx, a.*
-		    FROM (
-		    	SELECT *
-		    	FROM nboard
-		    	WHERE 
-		    		<include refid="searchCondition" />
-		    		deleted = '0' OR deleted = '1'
-		    	ORDER BY group_no
-		    ) a
+			SELECT rownum idx, a.*
+			FROM (
+				SELECT *
+				FROM nboard
+				WHERE
+				<include refid="searchCondition" />
+				deleted = '0' OR deleted = '1'
+				ORDER BY group_no
+			) a
 		)
 		WHERE
 			<![CDATA[ idx <= #{ beginning } ]]>
-			AND idx >= #{ end }
+		AND idx >= #{ end }
 		ORDER BY group_no DESC, step_no ASC
 	</select>
-	
+
 	<!-- 전체 게시물 갯수 조회 -->
 	<select id="selectNBoardCount" parameterType="hashmap" resultType="int">
-		SELECT COUNT(*) 
+		SELECT COUNT(*)
 		FROM nboard
-		WHERE 
-			<include refid="searchCondition" />
-			deleted = '0' OR deleted = '1'
+		WHERE
+		<include refid="searchCondition" />
+		deleted = '0' OR deleted = '1'
 	</select>
-	
+
 	<!-- 상세보기 -->
 	<select id="selectNBoardByNBoardNo" parameterType="int" resultMap="nBoardMap">
-		SELECT n.board_no, n.title, n.writer, n.content, n.reg_date, n.read_count, n.deleted,
-				n.group_no, n.step_no, n.depth,
-				f.upload_file_no, f.saved_file_name, f.user_file_name, f.download_count,
-				c.comment_no, c.replier, c.reply, c.reply_date, c.reply_gno, c.reply_sno, c.reply_depth, c.reply_deleted
+		SELECT n.board_no, n.title, n.writer, n.content, n.reg_date, n.read_count, n.deleted, n.group_no, n.step_no, n.depth,
+			f.upload_file_no, f.saved_file_name, f.user_file_name, f.download_count,
+			c.comment_no, c.replier, c.reply, c.reply_date, c.reply_gno, c.reply_sno, c.reply_depth, c.reply_deleted
 		FROM nboard n
 		LEFT OUTER JOIN uploadfile f
 		ON n.board_no = f.board_no
 		LEFT OUTER JOIN nboardcomment c
 		ON n.board_no = c.board_no
 		WHERE n.board_no = #{ nBoardNo } AND n.deleted = '0'
+		ORDER BY c.reply_gno DESC, c.reply_sno ASC
 	</select>
-	
+
 	<!-- 조회수 증가 -->
 	<update id="updateNBoardReadCount" parameterType="int">
 		UPDATE nboard
 		SET read_count = read_count + 1
 		WHERE board_no = #{ boardNo }
 	</update>
-	
+
 	<!-- 삭제하기(update : deleted='1') -->
 	<update id="deleteNBoardByNBoardNo" parameterType="int">
 		UPDATE nboard
 		SET deleted = '1'
 		WHERE board_no = #{ nBoardNo }
 	</update>
-	
+
 	<!-- 수정하기 -->
 	<update id="updateNBoardByNBoardNo" parameterType="NBoardVO">
 		UPDATE nboard
 		SET title = #{ title }, content = #{ content }
-		WHERE board_no = #{ boardNo }
+		WHERE board_no = #{
+		boardNo }
 	</update>
-	
+
 	<!-- 파일 업로드 -->
 	<insert id="insertUploadFile" parameterType="UploadFileVO">
-		INSERT INTO uploadfile ( upload_file_no, board_no, saved_file_name, user_file_name )
-		VALUES ( upload_file_sequence.nextval, #{ boardNo }, #{ savedFileName }, #{ userFileName } )
+		INSERT INTO
+		uploadfile ( 
+			upload_file_no, board_no, saved_file_name, user_file_name
+		)
+		VALUES ( 
+			upload_file_sequence.nextval, #{ boardNo }, #{ savedFileName }, #{ userFileName }
+		)
 	</insert>
-	
+
 	<!-- 파일 조회 -->
-	<select id="selectUploadFileByFileNo" parameterType="int" resultType="UploadFileVO">
+	<select id="selectUploadFileByFileNo" parameterType="int"
+		resultType="UploadFileVO">
 		SELECT *
 		FROM uploadfile
 		WHERE upload_file_no = #{ fileNo }
 	</select>
-	
+
 	<!-- 댓글 작성 -->
 	<insert id="insertNBoardComment" parameterType="NBoardCommentVO"
-			useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
-		INSERT INTO nboardcomment ( comment_no, board_no, replier, reply, reply_gno, reply_sno, reply_depth )
-		VALUES ( nboard_comment_sequence.nextval, #{ boardNo }, #{ replier }, #{ reply }, nboard_comment_sequence.currval, 1, 0 )
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO nboardcomment (
+			comment_no, board_no, replier, reply, reply_gno, reply_sno, reply_depth 
+		)
+		VALUES (
+			nboard_comment_sequence.nextval, #{	boardNo }, #{ replier }, #{ reply }, nboard_comment_sequence.currval, 1, 0
+		)
 	</insert>
-	
+
+	<!-- 대댓글 작성 -->
+	<insert id="insertNBoardReComment" parameterType="NBoardCommentVO"
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO nboardcomment (
+			comment_no, board_no, replier, reply, reply_gno, reply_sno, reply_depth
+		)
+		VALUES (
+			nboard_comment_sequence.nextval, #{ boardNo }, #{ replier }, #{ reply }, #{ replyGno }, #{ replySno }, #{ replyDepth }
+		)
+	</insert>
+
+	<!-- reply_sno 조정 -->
 	<update id="updateCommentSno" parameterType="NBoardCommentVO">
 		<![CDATA[
 		UPDATE nboardcomment
-		SET step_no = step_no + 1
-		WHERE group_no = #{ groupNo } AND step_no > #{ stepNo }
+		SET reply_sno = reply_sno + 1
+		WHERE reply_gno = #{ replyGno } AND reply_sno > #{ replySno }
 		]]>
 	</update>
-	
-	<!-- 대댓글 작성 -->
-	<insert id="insertNBoardReComment" parameterType="NBoardCommentVO"
-			useGeneratedKeys="true" keyColumn="comment_no" keyProperty="commentNo">
-		INSERT INTO tbl_reply ( comment_no, board_no, writer, content, group_no, step_no, depth )
-		VALUES ( nboard_comment_sequence.nextval, #{ boardNo }, #{ writer }, #{ content }, #{ groupNo }, #{ stepNo }, #{ depth })
-	</insert>
-	
+
 	<!-- 댓글 삭제 -->
 	<update id="deleteComment" parameterType="int">
 		UPDATE nboardcomment
 		SET reply_deleted = '1'
 		WHERE comment_no = #{ commentNo }
 	</update>
-	
+
 	<!-- 댓글 조회 -->
 	<select id="selectNBoardCommentByCommentNo" parameterType="int" resultType="NBoardCommentVO">
 		SELECT *
 		FROM nboardcomment
 		WHERE comment_no = #{ commentNo }
 	</select>
-	
+
 	<!-- 댓글 수정 -->
 	<update id="updateNBoardComment" parameterType="NBoardCommentVO">
 		UPDATE nboardcomment
 		SET reply = #{ reply }
 		WHERE comment_no = #{ commentNo }
 	</update>
-	
+
 </mapper>

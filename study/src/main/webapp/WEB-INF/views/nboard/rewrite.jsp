@@ -28,10 +28,10 @@
                     	<input type="hidden" name="prNBoardNo" value="${ nBoardNo }" />
                     	<input type="hidden" name="stepNo" value="${ stepNo }" />
                         <table>
-                            <tr style="width:600px">
+                            <tr>
                                 <th>제목</th>
                                 <td>
-                                    <input type="text" name="title" style="width:580px" />
+                                    <input type="text" name="title" />
                                 </td>
                             </tr>
                             <tr>
@@ -44,13 +44,13 @@
                             <tr>
                                 <th>첨부자료</th>
                                 <td>
-                                    <input type="file" name="attach" style="width:580px;height:25px" />
+                                    <input type="file" name="attach" />
                                 </td>
                             </tr>
                             <tr>
                                 <th>내용</th>
                                 <td>
-                                    <textarea id="content" name="content" style="width:580px" rows="15"></textarea>
+                                    <textarea id="content" name="content" rows="20"></textarea>
                                 </td>
                             </tr>
                         </table>

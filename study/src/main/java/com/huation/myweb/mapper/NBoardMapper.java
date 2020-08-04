@@ -46,4 +46,8 @@ public interface NBoardMapper {
 
 	void updateNBoardComment(NBoardCommentVO comment);
 
+	void updateCommentSno(NBoardCommentVO prComment);
+
+	int insertNBoardReComment(NBoardCommentVO comment);
+
 }

@@ -60,7 +60,7 @@
                             <td>${ fn:replace(nBoard.content, enter, "<br>") }</td>
                         </tr>
                     </table>
-                    <div class="buttons" style="margin:5px 0px 5px 260px;">
+                    <div class="buttons">
                         <%-- 로그인한 사용자와 글의 작성자가 같으면 삭제, 수정 버튼 활성화 --%>
                         <c:if test="${ loginuser.memberId eq nBoard.writer }">
                             <input type="button" id="update_button" value="편집" style="height:25px" />
@@ -72,7 +72,7 @@
                         </c:if>
 
                         <input type="button" id="re_button" value="답변" style="height:25px" />
-                        <input type="button" id="cancel_button" value="목록보기" style="height:25px" />
+                        <input type="button" id="cancel_button" value="목록" style="height:25px" />
 
                     </div>
 
@@ -87,9 +87,11 @@
                             <form id="reply" action="reply" method="post">
                                 <input type="hidden" name="boardNo" value="${ nBoard.boardNo }">
                                 <input type="hidden" name="replier" value="${ loginuser.memberId }">
-                                <textarea id="content" name="reply" style="width:734px" rows="5"></textarea>
+                                <textarea id="content" name="reply" rows="5"></textarea>
                                 <br>
-                                <input type="button" id='addReplyBtn' value="작성" style="margin-left:700px;height:25px;">
+                                <div style="text-align:right">
+                                	<input type="button" id='addReplyBtn' value="작성">
+                                </div>
                             </form>
                         </div>
 
@@ -127,21 +129,24 @@
                 //history.back(); // 브라우저의 이전 버튼을 클릭
             });
 
-            // 댓글
+            // 댓글 작성
             $("#addReplyBtn").on('click', function (event) {
                 $("#reply").submit();
             });
 
+			// 댓글 수정
             $("#comments").on('click', '.modify', function (event) {
                 var rno = $(this).attr("data-rno");
                 location.href = "modify-reply?rno=" + rno;
             });
 
-            // 작성중~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+            // 대댓글 작성
             $("#comments").on('click', '.re-reply', function (event) {
             	var rno = $(this).attr("data-rno");
             	location.href = "re-reply?rno=" + rno;
             });
+
+            console.log($(".repliers").attr("data-depth"));
 
         });
     </script>
