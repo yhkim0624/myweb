@@ -30,12 +30,12 @@ CREATE TABLE nboardcomment
 (
     comment_no number not null primary key,
     board_no number not null,
-    writer varchar2(20) not null,
-    content varchar2(500) not null,
-    reg_date date default(SYSDATE),
-    group_no number not null,
-    step_no number not null,
-    depth number default(0)
+    replier varchar2(20) not null,
+    reply varchar2(500) not null,
+    reply_date date default(SYSDATE),
+    reply_gno number not null,
+    reply_sno number not null,
+    reply_depth number default(0)
 );
 
 ALTER TABLE nboardcomment
@@ -44,7 +44,7 @@ FOREIGN KEY (board_no) REFERENCES nboard (board_no);
 
 ALTER TABLE nboardcomment
 ADD CONSTRAINT fk_member_comment
-FOREIGN KEY (writer) REFERENCES member (member_id);
+FOREIGN KEY (replier) REFERENCES member (member_id);
 
 CREATE TABLE aboard
 (
@@ -68,12 +68,12 @@ CREATE TABLE aboardcomment
 (
     comment_no number not null primary key,
     board_no number not null,
-    writer varchar2(20) not null,
-    content varchar2(500) not null,
-    reg_date date default(SYSDATE),
-    group_no number not null,
-    step_no number not null,
-    depth number default(0)
+    replier varchar2(20) not null,
+    reply varchar2(500) not null,
+    reply_date date default(SYSDATE),
+    reply_gno number not null,
+    reply_sno number not null,
+    reply_depth number default(0)
 );
 
 ALTER TABLE aboardcomment
@@ -82,7 +82,7 @@ FOREIGN KEY (board_no) REFERENCES aboard (board_no);
 
 ALTER TABLE aboardcomment
 ADD CONSTRAINT fk_member_acomment
-FOREIGN KEY (writer) REFERENCES member (member_id);
+FOREIGN KEY (replier) REFERENCES member (member_id);
 
 CREATE TABLE uploadfile
 (
@@ -102,3 +102,7 @@ CREATE SEQUENCE nboard_sequence;
 CREATE SEQUENCE upload_file_sequence;
 
 CREATE SEQUENCE nboard_comment_sequence;
+
+CREATE SEQUENCE aboard_sequence;
+
+CREATE SEQUENCE aboard_comment_sequence;
