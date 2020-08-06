@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+	PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+		   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.huation.myweb.mapper.ABoardMapper">
+
+	<resultMap type="ABoardVO" id="aBoardMap">
+		<id column="board_no" property="boardNo" />
+		<result column="title" property="title" />
+		<result column="writer" property="writer" />
+		<result column="content" property="content" />
+		<result column="reg_date" property="regDate" />
+		<result column="read_count" property="readCount" />
+		<result column="deleted" property="deleted" />
+		<result column="group_no" property="groupNo" />
+		<result column="step_no" property="stepNo" />
+		<result column="depth" property="depth" />
+		<collection column="board_no" property="aBoardComments"
+			resultMap="aBoardCommentMap" />
+	</resultMap>
+
+	<resultMap type="ABoardCommentVO" id="aBoardCommentMap">
+		<id column="comment_no" property="commentNo" />
+		<result column="replier" property="replier" />
+		<result column="reply" property="reply" />
+		<result column="reply_date" property="replyDate" />
+		<result column="reply_gno" property="replyGno" />
+		<result column="reply_sno" property="replySno" />
+		<result column="reply_depth" property="replyDepth" />
+		<result column="reply_deleted" property="replyDeleted" />
+	</resultMap>
+
+	<!-- 글쓰기 -->
+	<insert id="insertABoard" parameterType="ABoardVO"
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO
+		aboard (
+			board_no, title, writer, content, group_no, step_no, depth
+		)
+		VALUES (
+			aboard_sequence.nextval, #{ title }, #{ writer }, #{ content }, aboard_sequence.currval, 1, 0
+		)
+	</insert>
+
+	<!-- 답변글쓰기 -->
+	<insert id="insertReABoard" parameterType="ABoardVO"
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO
+		aboard (
+			board_no, title, writer, content, group_no, step_no, depth
+		)
+		VALUES (
+			aboard_sequence.nextval, #{ title }, #{ writer }, #{ content }, #{ groupNo }, #{ stepNo }, #{ depth }
+		)
+	</insert>
+
+	<update id="updateSno" parameterType="ABoardVO">
+		<![CDATA[
+		UPDATE aboard
+		SET step_no = step_no + 1
+		WHERE group_no = #{ groupNo } AND step_no > #{ stepNo }
+		]]>
+	</update>
+
+	<!-- 목록보기(페이징) -->
+	<select id="selectABoardWithPaging" resultType="ABoardVO" parameterType="hashmap">
+		SELECT *
+		FROM (
+			SELECT rownum idx, a.*
+			FROM (
+				SELECT *
+				FROM aboard
+				ORDER BY group_no
+			) a
+		)
+		WHERE
+			<![CDATA[ idx <= #{ beginning } ]]>
+		AND idx >= #{ end }
+		ORDER BY group_no DESC, step_no ASC
+	</select>
+
+	<!-- 전체 게시물 갯수 조회 -->
+	<select id="selectABoardCount" resultType="int">
+		SELECT COUNT(*)
+		FROM aboard
+	</select>
+
+	<!-- 상세보기 -->
+	<select id="selectABoardByABoardNo" parameterType="int" resultMap="aBoardMap">
+		SELECT a.board_no, a.title, a.writer, a.content, a.reg_date, a.read_count, a.deleted, a.group_no, a.step_no, a.depth,
+			c.comment_no, c.replier, c.reply, c.reply_date, c.reply_gno, c.reply_sno, c.reply_depth, c.reply_deleted
+		FROM aboard a
+		LEFT OUTER JOIN aboardcomment c
+		ON a.board_no = c.board_no
+		WHERE a.board_no = #{ aBoardNo } AND a.deleted = '0'
+		ORDER BY c.reply_gno DESC, c.reply_sno ASC
+	</select>
+
+	<!-- 조회수 증가 -->
+	<update id="updateABoardReadCount" parameterType="int">
+		UPDATE aboard
+		SET read_count = read_count + 1
+		WHERE board_no = #{ boardNo }
+	</update>
+
+	<!-- 삭제하기(update : deleted='1') -->
+	<update id="deleteABoardByNBoardNo" parameterType="int">
+		UPDATE aboard
+		SET deleted = '1'
+		WHERE board_no = #{ aBoardNo }
+	</update>
+
+	<!-- 수정하기 -->
+	<update id="updateNBoardByNBoardNo" parameterType="NBoardVO">
+		UPDATE nboard
+		SET title = #{ title }, content = #{ content }
+		WHERE board_no = #{
+		boardNo }
+	</update>
+
+	<!-- 댓글 작성 -->
+	<insert id="insertABoardComment" parameterType="ABoardCommentVO"
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO aboardcomment (
+			comment_no, board_no, replier, reply, reply_gno, reply_sno, reply_depth 
+		)
+		VALUES (
+			aboard_comment_sequence.nextval, #{	boardNo }, #{ replier }, #{ reply }, aboard_comment_sequence.currval, 1, 0
+		)
+	</insert>
+
+	<!-- 대댓글 작성 -->
+	<insert id="insertABoardReComment" parameterType="ABoardCommentVO"
+		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+		INSERT INTO aboardcomment (
+			comment_no, board_no, replier, reply, reply_gno, reply_sno, reply_depth
+		)
+		VALUES (
+			aboard_comment_sequence.nextval, #{ boardNo }, #{ replier }, #{ reply }, #{ replyGno }, #{ replySno }, #{ replyDepth }
+		)
+	</insert>
+
+	<!-- reply_sno 조정 -->
+	<update id="updateCommentSno" parameterType="ABoardCommentVO">
+		<![CDATA[
+		UPDATE aboardcomment
+		SET reply_sno = reply_sno + 1
+		WHERE reply_gno = #{ replyGno } AND reply_sno > #{ replySno }
+		]]>
+	</update>
+
+	<!-- 댓글 삭제 -->
+	<update id="deleteComment" parameterType="int">
+		UPDATE aboardcomment
+		SET reply_deleted = '1'
+		WHERE comment_no = #{ commentNo }
+	</update>
+
+	<!-- 댓글 조회 -->
+	<select id="selectABoardCommentByCommentNo" parameterType="int" resultType="ABoardCommentVO">
+		SELECT *
+		FROM aboardcomment
+		WHERE comment_no = #{ commentNo }
+	</select>
+
+	<!-- 댓글 수정 -->
+	<update id="updateABoardComment" parameterType="ABoardCommentVO">
+		UPDATE aboardcomment
+		SET reply = #{ reply }
+		WHERE comment_no = #{ commentNo }
+	</update>
+
+</mapper>

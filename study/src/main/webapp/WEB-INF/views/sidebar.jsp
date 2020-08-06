@@ -31,7 +31,7 @@
 		<ul>
 			<li><a href="/myweb/">HOME</a></li>
 			<li><a href="/myweb/nboard/list">Board1</a></li>
-			<li><a href="#">Board2</a></li>
+			<li><a href="/myweb/aboard/main">Board2</a></li>
 			<li><a href="#">Graph</a></li>
 			<li><a href="#">Chat</a></li>
 		</ul>

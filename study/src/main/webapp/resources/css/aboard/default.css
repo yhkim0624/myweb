@@ -1,0 +1,13 @@
+@charset "UTF-8";
+
+body {
+	font-family: Tahoma, Arial, Helvetica;
+	font-size: 12px;
+}
+
+body {
+	background: #ffffff none repeat scroll 0;
+	color: #333333;
+	margin: 0;
+	padding: 0;
+}

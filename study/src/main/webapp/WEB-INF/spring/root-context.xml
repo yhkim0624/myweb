@@ -48,5 +48,9 @@
 	<bean id="nBoardService"
 		class="com.huation.myweb.service.NBoardServiceImpl">
 	</bean>
+	
+	<bean id="aBoardService"
+		class="com.huation.myweb.service.ABoardServiceImpl">
+	</bean>
 
 </beans>
