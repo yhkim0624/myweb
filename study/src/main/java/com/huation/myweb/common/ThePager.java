@@ -23,7 +23,7 @@ public class ThePager {
 		this.dataCount = dataCount;
 		this.pageSize = pageSize;
 		this.pagerSize = pagerSize;
-		this.pageNo = pageNo;		
+		this.pageNo = pageNo;
 		pageCount = 
 			(dataCount / pageSize) + ((dataCount % pageSize) > 0 ? 1 : 0); 
 	}

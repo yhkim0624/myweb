@@ -44,9 +44,15 @@
 
         $(function() {         
 
-        	var popUpCloseHandler = function(uri, name, options, closeCallback) {
+			// 팝업창 설정
+    		var uri = "about:blank";
+        	var popupName = "_blank";
+        	var options = "width=900, height=600, left=200, top=100, location=no, menubar=no, status=no, toolbar=no";
+        	
+        	// 팝업창을 감시해서 닫히면(close) => closeCallback()
+        	var popUpCloseHandler = function(uri, name, location, options, closeCallback) {
             	var popup = window.open(uri, name, options);
-            	popup.location.href = "/myweb/aboard/write";
+            	popup.location.href = location;
             	var interval = window.setInterval(function() {
                 	try {
 						if (popup === null || popup.closed) {
@@ -54,29 +60,42 @@
 							closeCallback(popup);
 						}
                     } catch (e) {
-						console.log("Interval error" + e);
+						console.log("popUpCloseHandler error: " + e);
                     }
                 }, 1000);
                 return popup;
 	        }
-               
-        	$("#aboard-list-container").load("/myweb/aboard/list");
+
+            // JQuery load()를 통해 list.jsp 삽입
+        	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + ${ pager.pageNo });
             
-        	$(document).on('click', '#write', function (event) {
+        	$(document).on('click', '#write', function(event) {
             	
 	            if (${ empty loginuser }) {
 	            	location.href = "/myweb/login";
 	        	} else {
-	        		var uri = "about:blank";
-	            	var popupName = "_blank";
-	            	var options = "width=900, height=600, left=200, top=100, location=no, menubar=no, status=no, toolbar=no";
-	            	
-		        	popUpCloseHandler(uri, popupName, options, function(popup) {
-			        	//console.log("정상 확인 테스트");
-		        		$("#aboard-list-container").load("/myweb/aboard/list");
+		        	var write = "/myweb/aboard/write";
+	            	// 팝업창이 닫혔을 때 JQuary load()를 통해 list.jsp 갱신
+		        	popUpCloseHandler(uri, popupName, write, options, function(popup) {
+		        		$("#aboard-list-container").load("/myweb/aboard/list"); // 글작성 후엔 최신 페이지로
 			        });
 	        	}
 	        });
+
+	        $(document).on('click', '.lists', function(event) {
+
+				event.preventDefault();
+		        
+		        if (${ empty loginuser }) {
+					location.href = "/myweb/login";
+				} else {
+					var list = $(this).attr("href");
+					console.log(list);
+					popUpCloseHandler(uri, popupName, list, options, function(popup) {
+						$("#aboard-list-container").load("/myweb/aboard/list");
+					});
+				}
+		    });
             
             if (${ empty loginuser }) {
             	$(".lists").attr("href", "/myweb/login");

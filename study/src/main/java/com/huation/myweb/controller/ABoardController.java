@@ -3,6 +3,8 @@ package com.huation.myweb.controller;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
@@ -28,7 +30,7 @@ public class ABoardController {
 	@GetMapping(path = { "/main" })
 	public String showABoardMain(@RequestParam(defaultValue = "1") int pageNo, Model model) {
 
-		System.out.println("Call main...");
+		System.out.println("Call main... pageNo=" + pageNo);
 		
 		HashMap<String, Object> params = new HashMap<>();
 		int boardCount = aBoardService.findABoardCount();
@@ -42,11 +44,12 @@ public class ABoardController {
 			end = 1;
 		}
 		
+		System.out.printf("beginning: %d, end: %d\n", beginning, end);
 		params.put("beginning", beginning);
 		params.put("end", end);
 		
 		// 데이터 조회 (서비스에 요청)
-		List<ABoardVO> boards = aBoardService.findNBoardWithPaging(params);
+		List<ABoardVO> boards = aBoardService.findABoardWithPaging(params);
 		
 		ThePager pager = new ThePager(boardCount, pageNo, pageSize, pagerSize, "main");
 		
@@ -79,7 +82,7 @@ public class ABoardController {
 		params.put("end", end);
 		
 		// 데이터 조회 (서비스에 요청)
-		List<ABoardVO> boards = aBoardService.findNBoardWithPaging(params);
+		List<ABoardVO> boards = aBoardService.findABoardWithPaging(params);
 		
 		ThePager pager = new ThePager(boardCount, pageNo, pageSize, pagerSize, "main");
 		
@@ -104,6 +107,25 @@ public class ABoardController {
 		aBoardService.writeABoard(aBoard);
 		
 		return "success";
+	}
+	
+	@GetMapping(path = { "/detail" })
+	public String showNBoardDetail(@RequestParam("aboardno") int aBoardNo, HttpSession session) {
+
+		System.out.println("NBoard detail..." + aBoardNo);
+
+		ABoardVO aBoard = aBoardService.showABoardDetail(aBoardNo);
+
+		if (aBoard == null) {
+			return "redirect: /myweb/nboard/list";
+		}
+
+		System.out.println(aBoard.getABoardComments());
+
+		session.setAttribute("aBoard", aBoard);
+		session.setAttribute("comments", aBoard.getABoardComments());
+
+		return "nboard/detail";
 	}
 
 }

@@ -9,8 +9,10 @@ public interface ABoardService {
 
 	int findABoardCount();
 
-	List<ABoardVO> findNBoardWithPaging(HashMap<String, Object> params);
+	List<ABoardVO> findABoardWithPaging(HashMap<String, Object> params);
 
 	void writeABoard(ABoardVO aBoard);
+
+	ABoardVO showABoardDetail(int aBoardNo);
 	
 }

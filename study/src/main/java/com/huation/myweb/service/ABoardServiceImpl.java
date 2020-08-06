@@ -25,7 +25,7 @@ public class ABoardServiceImpl implements ABoardService {
 	}
 
 	@Override
-	public List<ABoardVO> findNBoardWithPaging(HashMap<String, Object> params) {
+	public List<ABoardVO> findABoardWithPaging(HashMap<String, Object> params) {
 		
 		return aBoardMapper.selectABoardWithPaging(params);
 	}
@@ -34,6 +34,18 @@ public class ABoardServiceImpl implements ABoardService {
 	public void writeABoard(ABoardVO aBoard) {
 		
 		aBoardMapper.insertABoard(aBoard);
+	}
+
+	@Override
+	public ABoardVO showABoardDetail(int aBoardNo) {
+		
+		ABoardVO aBoard = aBoardMapper.selectABoardByABoardNo(aBoardNo);
+
+		if (aBoard != null) {
+			aBoardMapper.updateABoardReadCount(aBoard.getBoardNo());
+		}
+
+		return aBoard;
 	}	
 
 }

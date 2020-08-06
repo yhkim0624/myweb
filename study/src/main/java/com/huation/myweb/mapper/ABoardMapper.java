@@ -18,4 +18,8 @@ public interface ABoardMapper {
 
 	void insertABoard(ABoardVO aBoard);
 
+	ABoardVO selectABoardByABoardNo(int aBoardNo);
+
+	void updateABoardReadCount(int boardNo);
+
 }
