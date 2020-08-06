@@ -110,14 +110,14 @@ public class ABoardController {
 	}
 	
 	@GetMapping(path = { "/detail" })
-	public String showNBoardDetail(@RequestParam("aboardno") int aBoardNo, HttpSession session) {
+	public String showABoardDetail(@RequestParam("aboardno") int aBoardNo, HttpSession session) {
 
-		System.out.println("NBoard detail..." + aBoardNo);
+		System.out.println("ABoard detail..." + aBoardNo);
 
 		ABoardVO aBoard = aBoardService.showABoardDetail(aBoardNo);
 
 		if (aBoard == null) {
-			return "redirect: /myweb/nboard/list";
+			return "redirect: /myweb/aboard/main";
 		}
 
 		System.out.println(aBoard.getABoardComments());
@@ -125,7 +125,21 @@ public class ABoardController {
 		session.setAttribute("aBoard", aBoard);
 		session.setAttribute("comments", aBoard.getABoardComments());
 
-		return "nboard/detail";
+		return "aboard/detail";
+	}
+	
+	@GetMapping(path = { "/update" })
+	public String showABoardUpdateForm(@RequestParam("aboardno") int aBoardNo, HttpSession session) {
+
+		ABoardVO aBoard = aBoardService.showABoardDetail(aBoardNo);
+
+		if (aBoard == null) {
+			return "redirect: /myweb/aboard/main";
+		}
+		
+		session.setAttribute("aBoard", aBoard);
+
+		return "aboard/update";
 	}
 
 }

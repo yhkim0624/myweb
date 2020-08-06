@@ -23,7 +23,8 @@
 				<div id="inputcontent">
 				    <div id="inputmain">
 				        <div class="inputsubtitle">게시물 수정</div>
-				        <form action="update"
+				        <form id="updateForm"
+				        	  action="update"
 				        	  method="post"
 				        	  enctype="multipart/form-data">
 				        <table>
@@ -49,7 +50,7 @@
 				            <tr>
 				                <th>내용</th>
 				                <td>
-				                	<textarea name="content" style="width:580px" rows="15">${ nBoard.content }</textarea>
+				                	<textarea id="content" name="content" style="width:580px" rows="15">${ nBoard.content }</textarea>
 				                </td>
 				            </tr>
 				        </table>
@@ -66,8 +67,28 @@
 		</div>
 		
 		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+		<!-- 스마트 에디터 -->
+   		<script type="text/javascript" src="/myweb/resources/smart-editor/js/service/HuskyEZCreator.js" charset="utf-8"></script>
 		<script type="text/javascript">
 			$(function() {
+				
+				//스마트에디터
+	            var oEditors = [];
+	            nhn.husky.EZCreator.createInIFrame({
+	                oAppRef: oEditors,
+	                elPlaceHolder: "content",
+	                sSkinURI: "/myweb/resources/smart-editor/SmartEditor2Skin.html",
+	                fCreator: "createSEditor2"
+	            });
+
+	            function submitContents() {
+	                oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+	            };
+
+	            $('#updateForm').on('submit', function (event) {
+	                submitContents();
+	            });
+				
 				$('#cancel').on('click', function(event) {
 					//history.back();
 					location.href = "list";

@@ -87,7 +87,6 @@
 
             $('#writeForm').on('submit', function (event) {
                 submitContents();
-                console.log($('#content').val());
             });
 
             $('#cancel').on('click', function (event) {
