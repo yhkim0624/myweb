@@ -9,7 +9,7 @@
 	<!-- sql : 재사용 할 수 있는 SQL 블럭 -->
 	<sql id="searchCondition">
 		<!-- 동적 SQL 사용 -->
-		<trim suffix="AND">
+		<trim prefix="WHERE">
 			<choose>
 				<when test="searchType == 'T'.toString()">
 					title LIKE '%'||#{searchKey}||'%'
@@ -110,9 +110,7 @@
 			FROM (
 				SELECT *
 				FROM nboard
-				WHERE
 				<include refid="searchCondition" />
-				deleted = '0' OR deleted = '1'
 				ORDER BY group_no
 			) a
 		) b
@@ -126,9 +124,7 @@
 	<select id="selectNBoardCount" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*)
 		FROM nboard
-		WHERE
 		<include refid="searchCondition" />
-		deleted = '0' OR deleted = '1'
 	</select>
 
 	<!-- 상세보기 -->
