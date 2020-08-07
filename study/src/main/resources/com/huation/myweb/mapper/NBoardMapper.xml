@@ -9,7 +9,7 @@
 	<!-- sql : 재사용 할 수 있는 SQL 블럭 -->
 	<sql id="searchCondition">
 		<!-- 동적 SQL 사용 -->
-		<trim suffix="">
+		<trim suffix="AND">
 			<choose>
 				<when test="searchType == 'T'.toString()">
 					title LIKE '%'||#{searchKey}||'%'
@@ -95,13 +95,16 @@
 	</update>
 
 	<!-- 목록보기 -->
-	<!-- <select id="selectNBoards" resultType="NBoardVO"> SELECT board_no, 
-		title, writer, reg_date, read_count, deleted, group_no, step_no, depth FROM 
-		nboard ORDER BY board_no DESC </select> -->
+	<select id="selectNBoards" resultType="NBoardVO">
+		SELECT *
+		FROM nboard
+		ORDER BY board_no DESC
+	</select>
 
 	<!-- 목록보기(페이징) -->
 	<select id="selectNBoardWithPaging" resultType="NBoardVO" parameterType="hashmap">
-		SELECT *
+		SELECT b.board_no, b.title, b.writer, b.content, TO_CHAR(b.reg_date, 'YYYY-MM-DD HH24:MI:SS') AS reg_date, b.read_count,
+			b.deleted, b.group_no, b.step_no, b.depth
 		FROM (
 			SELECT rownum idx, a.*
 			FROM (
@@ -112,7 +115,7 @@
 				deleted = '0' OR deleted = '1'
 				ORDER BY group_no
 			) a
-		)
+		) b
 		WHERE
 			<![CDATA[ idx <= #{ beginning } ]]>
 		AND idx >= #{ end }
@@ -174,6 +177,13 @@
 			upload_file_sequence.nextval, #{ boardNo }, #{ savedFileName }, #{ userFileName }
 		)
 	</insert>
+	
+	<!-- 파일리스트 조회 -->
+	<select id="selectUploadFileByNBoardNo" parameterType="int" resultType="UploadFileVO">
+		SELECT *
+		FROM uploadfile
+		WHERE board_no = #{ nBoardNo }
+	</select>
 
 	<!-- 파일 조회 -->
 	<select id="selectUploadFileByFileNo" parameterType="int"
@@ -182,6 +192,12 @@
 		FROM uploadfile
 		WHERE upload_file_no = #{ fileNo }
 	</select>
+	
+	<!-- 파일 삭제 -->
+	<delete id="deleteUploadFileByuploadFileNo" parameterType="int">
+		DELETE FROM uploadfile
+		WHERE upload_file_no = #{ fileNo }
+	</delete>
 
 	<!-- 댓글 작성 -->
 	<insert id="insertNBoardComment" parameterType="NBoardCommentVO"

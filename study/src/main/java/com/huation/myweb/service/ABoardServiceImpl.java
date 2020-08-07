@@ -46,6 +46,12 @@ public class ABoardServiceImpl implements ABoardService {
 		}
 
 		return aBoard;
+	}
+
+	@Override
+	public void updateABoard(ABoardVO aBoard) {
+		
+		aBoardMapper.updateABoardByABoardNo(aBoard);
 	}	
 
 }

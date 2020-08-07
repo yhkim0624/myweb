@@ -1,5 +1,6 @@
 package com.huation.myweb.mapper;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -16,11 +17,13 @@ public interface NBoardMapper {
 
 	void insertNBoard(NBoardVO nBoard);
 
-//	List<NBoardVO> selectNBoards();
+	List<NBoardVO> selectNBoards();
 	
 	List<NBoardVO> selectNBoardWithPaging(HashMap<String, Object> params);
 
 	NBoardVO selectNBoardByNBoardNo(int nBoardNo);
+
+	ArrayList<UploadFileVO> selectUploadFileByNBoardNo(int nBoardNo);
 
 	void deleteNBoardByNBoardNo(int nBoardNo);
 
@@ -49,5 +52,7 @@ public interface NBoardMapper {
 	void updateCommentSno(NBoardCommentVO prComment);
 
 	int insertNBoardReComment(NBoardCommentVO comment);
+
+	void deleteUploadFileByuploadFileNo(int fileNo);
 
 }

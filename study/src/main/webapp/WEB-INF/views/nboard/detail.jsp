@@ -40,15 +40,15 @@
                         </tr>
                         <tr>
                             <th>등록일자</th>
-                            <td>${ nBoard.regDate }</td>
+                            <td class="reg-date">${ nBoard.regDate }</td>
                         </tr>
                         <tr>
                             <th>첨부자료</th>
                             <td>
-                                <c:forEach var="file" items="${ nBoard.uploadFiles }">
-                                    <a href="download?file-no=${ file.uploadFileNo }">${ file.userFileName }</a>
-                                    (${ file.downloadCount })<br>
-                                </c:forEach>
+                            	<c:if test="${ not empty uploadFile }">
+		                            <a href="download?file-no=${ uploadFile.uploadFileNo }">${ uploadFile.userFileName }</a>
+		                            (${ uploadFile.downloadCount })<br>
+	                            </c:if>
                             </td>
                         </tr>
                         <tr>
@@ -107,7 +107,7 @@
 
     <script type="text/javascript">
         $(function () {
-
+        	
             // 게시물
             $("#update_button").on('click', function (event) {
                 location.href = "update?nboardno=${ nBoard.boardNo }";

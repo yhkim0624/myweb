@@ -1,6 +1,7 @@
 package com.huation.myweb.service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,12 +57,6 @@ public class NBoardServiceImpl implements NBoardService {
 		return newNum;
 	}
 
-//	@Override
-//	public List<NBoardVO> showNBoardList() {
-//		
-//		return nBoardMapper.selectNBoards();
-//	}
-
 	@Override
 	public NBoardVO showNBoardDetail(int nBoardNo) {
 
@@ -72,6 +67,18 @@ public class NBoardServiceImpl implements NBoardService {
 		}
 
 		return nBoard;
+	}
+
+	@Override
+	public UploadFileVO showLastUploadFile(int nBoardNo) {
+		
+		ArrayList<UploadFileVO> uploadFiles = nBoardMapper.selectUploadFileByNBoardNo(nBoardNo);
+		UploadFileVO uploadFile = null;
+		if (!uploadFiles.isEmpty()) {
+			uploadFile = uploadFiles.get(uploadFiles.size() - 1);
+		}
+		
+		return uploadFile;
 	}
 
 	@Override
@@ -101,7 +108,11 @@ public class NBoardServiceImpl implements NBoardService {
 	@Override
 	public List<NBoardVO> findNBoardWithPaging(HashMap<String, Object> params) {
 
-		return nBoardMapper.selectNBoardWithPaging(params);
+		List<NBoardVO> nBoardList = nBoardMapper.selectNBoardWithPaging(params);
+		
+		System.out.println(nBoardList.get(nBoardList.size() - 1).getRegDate());
+		
+		return nBoardList;
 	}
 
 	@Override
@@ -181,6 +192,18 @@ public class NBoardServiceImpl implements NBoardService {
 			}			
 		}
 
+	}
+
+	@Override
+	public void deleteFileByUploadFileNo(int fileNo) {
+		
+		nBoardMapper.deleteUploadFileByuploadFileNo(fileNo);
+	}
+
+	@Override
+	public List<NBoardVO> findNBoardAll() {
+		
+		return nBoardMapper.selectNBoards();
 	}
 
 }

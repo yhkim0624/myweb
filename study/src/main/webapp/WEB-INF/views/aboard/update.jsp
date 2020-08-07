@@ -19,7 +19,8 @@
 			<div id="inputcontent">
 			    <div id="inputmain">
 			        <div class="inputsubtitle">게시물 수정</div>
-			        <form action="update"
+			        <form id="updateForm"
+				    	  action="update"
 			        	  method="post"
 			        	  enctype="multipart/form-data">
 			        <table>
@@ -45,7 +46,7 @@
 			            <tr>
 			                <th>내용</th>
 			                <td>
-			                	<textarea name="content" style="width:580px" rows="15">${ aBoard.content }</textarea>
+			                	<textarea id="content" name="content" style="width:580px" rows="15">${ aBoard.content }</textarea>
 			                </td>
 			            </tr>
 			        </table>
@@ -61,11 +62,46 @@
 		</div>
 		
 		<script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+		<!-- 스마트 에디터 -->
+   		<script type="text/javascript" src="/myweb/resources/smart-editor/js/service/HuskyEZCreator.js" charset="utf-8"></script>
 		<script type="text/javascript">
 			$(function() {
+				//스마트에디터
+	            var oEditors = [];
+	            nhn.husky.EZCreator.createInIFrame({
+	                oAppRef: oEditors,
+	                elPlaceHolder: "content",
+	                sSkinURI: "/myweb/resources/smart-editor/SmartEditor2Skin.html",
+	                fCreator: "createSEditor2"
+	            });
+
+	            function submitContents() {
+	                oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+	            };
+
+	            $('#updateForm').on('submit', function (event) {
+		            event.preventDefault();
+
+	                submitContents();
+		            var values = $('#writeForm').serializeArray();
+		            
+		            $.ajax({
+	                    url: "/myweb/aboard/update",
+	                    type: "POST",
+	                    data: values,
+	                    success: function (data, status, xhr) {
+							window.close();
+							window.open('about:blank', '_self').self.close();
+	                    },
+	                    error: function (xhr, status, err) {
+	                        alert('게시물 수정 실패');
+	                    }
+	                });
+	            });
+	            
 				$('#cancel').on('click', function(event) {
-					//history.back();
-					location.href = "list";
+	                window.close();
+	                window.open('about:blank', '_self').self.close();
 				});
 			});
 		</script>

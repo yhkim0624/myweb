@@ -66,7 +66,7 @@
                     <c:forEach var="nBoard" items="${ nBoards }">
                         <tr style="height:30px;">
                             <td>${ nBoard.boardNo }</td>
-                            <td style="text-align:left;padding-left:3px">
+                            <td style="text-align:left;padding-left:${ nBoard.depth * 20}px;">
                                 <c:choose>
                                     <c:when test="${ not nBoard.deleted }">
                                         <a class="lists"

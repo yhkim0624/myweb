@@ -28,26 +28,33 @@ public class ExcelCellRef {
 
 		if (cell == null) {
 			value = "";
-		} else {
-			switch (cell.getCellType()) {
-			case FORMULA:
-				value = cell.getCellFormula();
-				break;
-			case NUMERIC:
-				value = (int) cell.getNumericCellValue() + "";
-				break;
-			case STRING:
-				value = cell.getStringCellValue();
-				break;
-			case BOOLEAN:
-				value = cell.getBooleanCellValue() + "";
-				break;
-			case ERROR:
-				value = cell.getErrorCellValue() + "";
-				break;
-			default:
-				value = cell.getStringCellValue();
-			}
+		}
+		switch (cell.getCellType()) {
+		case Cell.CELL_TYPE_FORMULA:
+			value = cell.getCellFormula();
+			break;
+
+		case Cell.CELL_TYPE_NUMERIC:
+			value = (int) cell.getNumericCellValue() + "";
+			break;
+
+		case Cell.CELL_TYPE_STRING:
+			value = cell.getStringCellValue();
+			break;
+
+		case Cell.CELL_TYPE_BOOLEAN:
+			value = cell.getBooleanCellValue() + "";
+			break;
+
+		case Cell.CELL_TYPE_BLANK:
+			value = "";
+			break;
+
+		case Cell.CELL_TYPE_ERROR:
+			value = cell.getErrorCellValue() + "";
+			break;
+		default:
+			value = cell.getStringCellValue();
 		}
 
 		return value;

@@ -35,7 +35,8 @@ CREATE TABLE nboardcomment
     reply_date date default(SYSDATE),
     reply_gno number not null,
     reply_sno number not null,
-    reply_depth number default(0)
+    reply_depth number default(0),
+    reply_deleted char(1) default ('1')
 );
 
 ALTER TABLE nboardcomment
@@ -73,7 +74,8 @@ CREATE TABLE aboardcomment
     reply_date date default(SYSDATE),
     reply_gno number not null,
     reply_sno number not null,
-    reply_depth number default(0)
+    reply_depth number default(0),
+    reply_deleted char(1) default ('1')
 );
 
 ALTER TABLE aboardcomment

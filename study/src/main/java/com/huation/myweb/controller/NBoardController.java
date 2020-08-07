@@ -3,27 +3,27 @@ package com.huation.myweb.controller;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.json.JSONArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,6 +36,9 @@ import com.huation.myweb.service.NBoardService;
 import com.huation.myweb.vo.NBoardCommentVO;
 import com.huation.myweb.vo.NBoardVO;
 import com.huation.myweb.vo.UploadFileVO;
+
+import net.sf.jxls.exception.ParsePropertyException;
+import net.sf.jxls.transformer.XLSTransformer;
 
 @Controller
 @RequestMapping(path = { "/nboard" })
@@ -67,7 +70,7 @@ public class NBoardController {
 		params.put("searchKey", searchKey);
 		int boardCount = nBoardService.findNBoardCount(params); // 전체 글 개수
 
-		int pageSize = 10;
+		int pageSize = 5;
 		int pagerSize = 5;
 		int beginning = boardCount - (pageNo - 1) * pageSize;
 		int end = (boardCount - pageNo * pageSize) + 1;
@@ -199,6 +202,7 @@ public class NBoardController {
 		System.out.println("NBoard detail..." + nBoardNo);
 
 		NBoardVO nBoard = nBoardService.showNBoardDetail(nBoardNo);
+		UploadFileVO uploadFile = nBoardService.showLastUploadFile(nBoardNo);
 
 		if (nBoard == null) {
 			return "redirect: /myweb/nboard/list";
@@ -207,6 +211,7 @@ public class NBoardController {
 		System.out.println(nBoard.getNBoardComments());
 
 		session.setAttribute("nBoard", nBoard);
+		session.setAttribute("uploadFile", uploadFile);
 		session.setAttribute("comments", nBoard.getNBoardComments());
 
 		return "nboard/detail";
@@ -237,12 +242,38 @@ public class NBoardController {
 	}
 
 	@PostMapping(path = { "/update" })
-	public String updateNBoard(NBoardVO nBoard) {
+	public String updateNBoard(@RequestParam("attach") MultipartFile userFile, HttpServletRequest req, NBoardVO nBoard,
+			UploadFileVO uploadFile) {
 
-		System.out.println("NBoard update..." + nBoard.getBoardNo());
+		int boardNo = nBoard.getBoardNo();
+		
+		System.out.println("NBoard update..." + boardNo);
 		System.out.println(nBoard);
 
 		nBoardService.updateNBoard(nBoard);
+		
+		if (!userFile.isEmpty()) {
+			ServletContext application = req.getServletContext();
+			String path = application.getRealPath("resources/file/upload-files");
+			String userFileName = userFile.getOriginalFilename();
+			String savedFileName = Util.makeUniqueFileName(userFileName);
+
+			try {
+				File file = new File(path, savedFileName);
+				userFile.transferTo(file);
+			} catch (Exception ex) {
+				ex.printStackTrace();
+			}
+
+			uploadFile.setBoardNo(boardNo);
+			uploadFile.setSavedFileName(savedFileName);
+			uploadFile.setUserFileName(userFileName);
+
+			System.out.println(uploadFile);
+
+			nBoardService.uploadFile(uploadFile);
+
+		}
 
 		return "redirect: /myweb/nboard/list";
 	}
@@ -346,86 +377,134 @@ public class NBoardController {
 		}
 	}
 	
+	// 페이징 테이블 기반 엑셀 다운로드
+//	@PostMapping(path = { "/excel-down" })
+//	public void excelDown(HttpServletRequest request, HttpServletResponse response,
+//	        @RequestParam(value = "title") String title, @RequestParam(value = "contents") String contents,
+//	        @RequestParam(value = "name") String name, @RequestParam(value = "rows") String rows,
+//	        @RequestParam(value = "columns") String columns) throws Exception {
+//	 
+//	    try {
+//	 
+//	        // request로 json 데이터 받기 String으로 받아 json으로 변환
+//	        JSONArray dataArry = new JSONArray(contents);
+//	        String[] myTitle = title.split(",");
+//	 
+//	        // 로우 파라미터 int로 변환
+//	        int myRows = Integer.parseInt(rows);
+//	 
+//	        // 컬럼 파라미터 int로 변환
+//	        int myColumns = Integer.parseInt(columns);
+//	 
+//	        // Workbook 생성
+//	        Workbook xlsWb = new HSSFWorkbook(); // Excel 2007 이전 버전
+//	 
+//	        // Sheet 생성
+//	        Sheet sheet1 = xlsWb.createSheet(name);
+//	        Row row = null;
+//	        Cell cell = null;
+//	 
+//	        row = sheet1.createRow(0);
+//	 
+//	        // excel 파일 저장
+//	        for (int r = 0; r < myRows; r++) {
+//	 
+//	            // 셀 제목 설정
+//	            if (r == 0) {
+//	 
+//	                for (int c = 0; c < myColumns; c++) {
+//	 
+//	                    cell = row.createCell(c);
+//	                    cell.setCellValue(myTitle[c]);
+//	 
+//	                }
+//	            }
+//	 
+//	            row = sheet1.createRow(r + 1); // 두번째줄을 생성(i+1)
+//	 
+//	            for (int c = 0; c < myColumns; c++) {
+//	 
+//	                cell = row.createCell(c);
+//	                cell.setCellValue(dataArry.getJSONObject(r).getString(myTitle[c]));
+//	 
+//	            }
+//	 
+//	        }
+//	 
+//	        // 브라우저 별 한글 인코딩
+//	        String header = request.getHeader("User-Agent");
+//	        if (header.contains("MSIE") || header.contains("Trident")) { // IE 11버전부터 Trident로 변경되었기때문에 추가해준다.
+//	            name = URLEncoder.encode(name, "UTF-8").replaceAll("\\+", "%20");
+//	            response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xls;");
+//	        } else if (header.contains("Chrome")) {
+//	            name = new String(name.getBytes("UTF-8"), "ISO-8859-1");
+//	            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\".xls");
+//	        } else if (header.contains("Opera")) {
+//	            name = new String(name.getBytes("UTF-8"), "ISO-8859-1");
+//	            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\".xls");
+//	        } else if (header.contains("Firefox")) {
+//	            name = new String(name.getBytes("UTF-8"), "ISO-8859-1");
+//	            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\".xls");
+//	        }
+//	 
+//	        // 엑셀 출력
+//	        xlsWb.write(response.getOutputStream());
+//	        xlsWb.close();
+//	        System.out.println("Excel 출력 완료");
+//	    } catch (Exception e) {
+//	        e.printStackTrace();
+//	        response.setHeader("Set-Cookie", "fileDownload=false; path=/");
+//	        System.out.println("Excel 출력 실패");
+//	    }
+//	 
+//	}
+	
 	@PostMapping(path = { "/excel-down" })
-	public void excelDown(HttpServletRequest request, HttpServletResponse response,
-	        @RequestParam(value = "title") String title, @RequestParam(value = "contents") String contents,
-	        @RequestParam(value = "name") String name, @RequestParam(value = "rows") String rows,
-	        @RequestParam(value = "columns") String columns) throws Exception {
-	 
+    public void listExcel(@ModelAttribute("nBoard") NBoardVO nBoard,
+            HttpServletResponse response) throws IOException {
+		
+		final String sample = "/excel/sample.xlsx";
+		OutputStream os = null;
+		InputStream is = null;
+		
+		is = new ClassPathResource(sample).getInputStream();
+
+	    Map<String, Object> beans = new HashMap<>();
+
+	    List<NBoardVO> list = nBoardService.findNBoardAll();
+
+	    beans.put("nBoardList", list);
+
+	    response.setHeader("Set-Cookie", "fileDownload=false; path=/");
+	    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	    response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", URLEncoder.encode("일반게시판", "UTF-8")+".xlsx"));
+
+	    os = response.getOutputStream();
+
+		XLSTransformer transformer = new XLSTransformer();
 	    try {
-	 
-	        // request로 json 데이터 받기 String으로 받아 json으로 변환
-	        JSONArray dataArry = new JSONArray(contents);
-	        String[] myTitle = title.split(",");
-	 
-	        // 로우 파라미터 int로 변환
-	        int myRows = Integer.parseInt(rows);
-	 
-	        // 컬럼 파라미터 int로 변환
-	        int myColumns = Integer.parseInt(columns);
-	 
-	        // Workbook 생성
-	        Workbook xlsWb = new HSSFWorkbook(); // Excel 2007 이전 버전
-	 
-	        // Sheet 생성
-	        Sheet sheet1 = xlsWb.createSheet(name);
-	        Row row = null;
-	        Cell cell = null;
-	 
-	        row = sheet1.createRow(0);
-	 
-	        // excel 파일 저장
-	        for (int r = 0; r < myRows; r++) {
-	 
-	            // 셀 제목 설정
-	            if (r == 0) {
-	 
-	                for (int c = 0; c < myColumns; c++) {
-	 
-	                    cell = row.createCell(c);
-	                    cell.setCellValue(myTitle[c]);
-	 
-	                }
-	            }
-	 
-	            row = sheet1.createRow(r + 1); // 두번째줄을 생성(i+1)
-	 
-	            for (int c = 0; c < myColumns; c++) {
-	 
-	                cell = row.createCell(c);
-	                cell.setCellValue(dataArry.getJSONObject(r).getString(myTitle[c]));
-	 
-	            }
-	 
-	        }
-	 
-	        // 브라우저 별 한글 인코딩
-	        String header = request.getHeader("User-Agent");
-	        if (header.contains("MSIE") || header.contains("Trident")) { // IE 11버전부터 Trident로 변경되었기때문에 추가해준다.
-	            name = URLEncoder.encode(name, "UTF-8").replaceAll("\\+", "%20");
-	            response.setHeader("Content-Disposition", "attachment;filename=" + name + ".xls;");
-	        } else if (header.contains("Chrome")) {
-	            name = new String(name.getBytes("UTF-8"), "ISO-8859-1");
-	            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\".xls");
-	        } else if (header.contains("Opera")) {
-	            name = new String(name.getBytes("UTF-8"), "ISO-8859-1");
-	            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\".xls");
-	        } else if (header.contains("Firefox")) {
-	            name = new String(name.getBytes("UTF-8"), "ISO-8859-1");
-	            response.setHeader("Content-Disposition", "attachment; filename=\"" + name + "\".xls");
-	        }
-	 
-	        // 엑셀 출력
-	        xlsWb.write(response.getOutputStream());
-	        xlsWb.close();
-	        System.out.println("Excel 출력 완료");
-	    } catch (Exception e) {
-	        e.printStackTrace();
-	        response.setHeader("Set-Cookie", "fileDownload=false; path=/");
-	        System.out.println("Excel 출력 실패");
-	    }
-	 
-	}
+			Workbook excel = transformer.transformXLS(is, beans);
+			excel.write(os);
+			os.flush();
+		} catch (ParsePropertyException e) {
+			e.printStackTrace();
+		} catch (InvalidFormatException e) {
+			e.printStackTrace();
+		} finally {
+			if (os != null) {
+				try {
+					os.close();
+				} catch (IOException e) {
+				}
+			}
+			if (is != null) {
+				try {
+					is.close();
+				} catch (IOException e) {
+				}
+			}
+		}
+    }
 	
 	@PostMapping(path = { "/excel-up" })
 	public String excelUp(@RequestParam("excelFile") MultipartFile excelFile, HttpServletRequest req) {
@@ -450,6 +529,14 @@ public class NBoardController {
 		}
 		
 		return "redirect: /myweb/nboard/list";
+	}
+	
+	@PostMapping(path = { "/delete-file" })
+	public String deleteFileByUploadFileNo(@RequestParam("file-no") int fileNo, @RequestParam("board-no") int boardNo) {
+		
+		nBoardService.deleteFileByUploadFileNo(fileNo);
+		
+		return "redirect: /myweb/nboard/update?nboardno=" + boardNo;
 	}
 
 

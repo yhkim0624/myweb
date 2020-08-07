@@ -12,8 +12,6 @@ public interface NBoardService {
 
 	int writeNBoard(NBoardVO nBoard);
 
-//	List<NBoardVO> showNBoardList();
-
 	NBoardVO showNBoardDetail(int nBoardNo);
 
 	void deleteNBoard(int nBoardNo);
@@ -41,5 +39,11 @@ public interface NBoardService {
 	int writeReReply(int prCommentNo, NBoardCommentVO comment);
 
 	void excelUpload(File file);
+
+	void deleteFileByUploadFileNo(int fileNo);
+
+	UploadFileVO showLastUploadFile(int nBoardNo);
+
+	List<NBoardVO> findNBoardAll();
 	
 }

@@ -14,5 +14,7 @@ public interface ABoardService {
 	void writeABoard(ABoardVO aBoard);
 
 	ABoardVO showABoardDetail(int aBoardNo);
+
+	void updateABoard(ABoardVO aBoard);
 	
 }

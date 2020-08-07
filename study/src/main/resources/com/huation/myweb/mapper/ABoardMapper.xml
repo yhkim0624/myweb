@@ -113,8 +113,8 @@
 	</update>
 
 	<!-- 수정하기 -->
-	<update id="updateNBoardByNBoardNo" parameterType="NBoardVO">
-		UPDATE nboard
+	<update id="updateABoardByABoardNo" parameterType="NBoardVO">
+		UPDATE aboard
 		SET title = #{ title }, content = #{ content }
 		WHERE board_no = #{
 		boardNo }

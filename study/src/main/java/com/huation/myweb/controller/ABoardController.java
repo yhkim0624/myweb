@@ -141,5 +141,17 @@ public class ABoardController {
 
 		return "aboard/update";
 	}
+	
+	@PostMapping(path = { "/update" })
+	@ResponseBody
+	public String updateABoard(ABoardVO aBoard) {
+
+		System.out.println("ABoard update..." + aBoard.getBoardNo());
+		System.out.println(aBoard);
+
+		aBoardService.updateABoard(aBoard);
+
+		return "success";
+	}
 
 }

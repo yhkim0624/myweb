@@ -1,6 +1,5 @@
 package com.huation.myweb.vo;
 
-import java.util.Date;
 import java.util.List;
 
 import lombok.Data;
@@ -12,7 +11,7 @@ public class NBoardVO {
 	private String title;
 	private String writer;
 	private String content;
-	private Date regDate;
+	private String regDate;
 	private int readCount;
 	private boolean deleted;
 	private int groupNo;

@@ -1,6 +1,8 @@
 <%@page import="com.huation.myweb.vo.MemberVO"%>
 <%@ page language="java" contentType="text/html; charset=utf-8"
     pageEncoding="utf-8"%>
+    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 
 <!DOCTYPE html>
@@ -42,10 +44,19 @@
 				                </td>
 				            </tr>
 				            <tr>
-				                <th>첨부자료</th>
-				                <td>
-				                    <input type="file" name="attach" style="width:580px;height:25px" />
-				                </td>
+				                <th rowspan="2">첨부자료</th>
+	                            <td>
+	                                <c:forEach var="file" items="${ nBoard.uploadFiles }">
+	                                    <a href="download?file-no=${ file.uploadFileNo }">${ file.userFileName }</a>
+	                                    (${ file.downloadCount })
+	                                    <a href="#" id="delete-file" file-no="${ file.uploadFileNo }">[삭제]</a><br>
+	                                </c:forEach>
+	                            </td>
+				            </tr>
+				            <tr>
+                                <td>
+                                    <input type="file" name="attach" style="height:25px;" />
+                                </td>
 				            </tr>
 				            <tr>
 				                <th>내용</th>
@@ -58,7 +69,7 @@
 				        	<input type="submit" value="등록" style="height:25px" />
 				        	<input id="cancel" type="button" value="취소" style="height:25px"  />
 				        </div>
-				        <input type="hidden" value="${ nBoard.boardNo }" name="boardNo" />
+				        <input type="hidden" value="${ nBoard.boardNo }" id="board-no" name="boardNo" />
 				        </form>
 				    </div>
 				</div>   	
@@ -85,6 +96,28 @@
 	                oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
 	            };
 
+	            function makeForm(action, fileNo, boardNo, method="GET") {
+	    			var form = $('<form></form>');
+	    			form.attr({
+	    				'action': action,
+	    				'method': method
+	    			});
+	    			form.append($('<input>').attr({
+	    				"type": "hidden",
+	    				"name": "file-no",
+	    				"value" : fileNo })
+	    			);
+	    			form.append($('<input>').attr({
+	    				"type": "hidden",
+	    				"name": "board-no",
+	    				"value" : boardNo })
+	    			);
+	    			
+	    			form.appendTo("body");
+	    			
+	    			return form;
+	    		}
+
 	            $('#updateForm').on('submit', function (event) {
 	                submitContents();
 	            });
@@ -92,6 +125,15 @@
 				$('#cancel').on('click', function(event) {
 					//history.back();
 					location.href = "list";
+				});
+
+				$('#delete-file').on('click', function(event) {
+					event.preventDefault();
+					var fileNo = $('#delete-file').attr("file-no");
+					var boardNo = $('#board-no').val();
+					var deleteFileForm = makeForm("delete-file", fileNo, boardNo, "POST")
+					deleteFileForm.submit();
+					
 				});
 			});
 		</script>
