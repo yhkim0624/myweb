@@ -19,28 +19,18 @@
 			<div id="inputcontent">
 			    <div id="inputmain">
 			        <div class="inputsubtitle">게시물 수정</div>
-			        <form id="updateForm"
-				    	  action="update"
-			        	  method="post"
-			        	  enctype="multipart/form-data">
 			        <table>
 			            <tr style="width:600px">
 			                <th>제목</th>
 			                <td>
-			                    <input type="text" name="title" style="width:580px" value="${ aBoard.title }" />
+			                    <input type="text" id="title" name="title" style="width:580px" value="${ aBoard.title }" />
 			                </td>
 			            </tr>
 			            <tr>
 			                <th>작성자</th>
 			                <td>
-			                	<input type="hidden" name="writer" value="${ sessionScope.loginuser.memberId }" />
+			                	<input type="hidden" id="writer" name="writer" value="${ sessionScope.loginuser.memberId }" />
 			                	${ loginuser.memberId }
-			                </td>
-			            </tr>
-			            <tr>
-			                <th>첨부자료</th>
-			                <td>
-			                    <input type="file" name="attach" style="width:580px;height:25px" />
 			                </td>
 			            </tr>
 			            <tr>
@@ -51,11 +41,10 @@
 			            </tr>
 			        </table>
 			        <div class="buttons">
-			        	<input type="submit" value="등록" style="height:25px" />
+			        	<input type="button" id="updateBtn" value="등록" style="height:25px" />
 			        	<input id="cancel" type="button" value="취소" style="height:25px"  />
 			        </div>
-			        <input type="hidden" value="${ aBoard.boardNo }" name="boardNo" />
-			        </form>
+			        <input type="hidden" id="boardNo" value="${ aBoard.boardNo }" name="boardNo" />
 			    </div>
 			</div>   	
 	
@@ -79,21 +68,25 @@
 	                oEditors.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
 	            };
 
-	            $('#updateForm').on('submit', function (event) {
-		            event.preventDefault();
-
+	            $('#updateBtn').on('click', function(event) {
 	                submitContents();
-		            var values = $('#writeForm').serializeArray();
+
+			    	var boardNo = $('#boardNo').val();
+		            var data = {
+				    	"title": $('#title').val(),
+				    	"content": $('#content').val()
+				    };
 		            
 		            $.ajax({
-	                    url: "/myweb/aboard/update",
-	                    type: "POST",
-	                    data: values,
-	                    success: function (data, status, xhr) {
+	                    url: "/myweb/aboard/" + boardNo,
+	                    type: "PUT",
+	                    contentType: "application/json", // PUT method 처리를 위해 설정
+	                    data: JSON.stringify(data), // JSON Object => JSON String
+	                    success: function(result, status, xhr) {
 							window.close();
 							window.open('about:blank', '_self').self.close();
 	                    },
-	                    error: function (xhr, status, err) {
+	                    error: function(xhr, status, err) {
 	                        alert('게시물 수정 실패');
 	                    }
 	                });

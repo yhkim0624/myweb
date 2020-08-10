@@ -106,23 +106,21 @@
 	</update>
 
 	<!-- 삭제하기(update : deleted='1') -->
-	<update id="deleteABoardByNBoardNo" parameterType="int">
+	<update id="deleteABoardByABoardNo" parameterType="int">
 		UPDATE aboard
 		SET deleted = '1'
 		WHERE board_no = #{ aBoardNo }
 	</update>
 
 	<!-- 수정하기 -->
-	<update id="updateABoardByABoardNo" parameterType="NBoardVO">
+	<update id="updateABoardByABoardNo" parameterType="ABoardVO">
 		UPDATE aboard
 		SET title = #{ title }, content = #{ content }
-		WHERE board_no = #{
-		boardNo }
+		WHERE board_no = #{ boardNo }
 	</update>
 
 	<!-- 댓글 작성 -->
-	<insert id="insertABoardComment" parameterType="ABoardCommentVO"
-		useGeneratedKeys="true" keyColumn="board_no" keyProperty="boardNo">
+	<insert id="insertABoardComment" parameterType="ABoardCommentVO">
 		INSERT INTO aboardcomment (
 			comment_no, board_no, replier, reply, reply_gno, reply_sno, reply_depth 
 		)
@@ -157,6 +155,14 @@
 		SET reply_deleted = '1'
 		WHERE comment_no = #{ commentNo }
 	</update>
+
+	<!-- 댓글 리스트 조회 -->
+	<select id="selectABoardCommentsByBoardNo" parameterType="int" resultType="ABoardCommentVO">
+		SELECT *
+		FROM aboardcomment
+		WHERE board_no = #{ aBoardNo }
+		ORDER BY reply_gno DESC, reply_sno ASC
+	</select>
 
 	<!-- 댓글 조회 -->
 	<select id="selectABoardCommentByCommentNo" parameterType="int" resultType="ABoardCommentVO">

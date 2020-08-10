@@ -74,7 +74,8 @@
 	            if (${ empty loginuser }) {
 	            	location.href = "/myweb/login";
 	        	} else {
-		        	var write = "/myweb/aboard/write";
+		        	var type = "write"
+		        	var write = "/myweb/aboard?type=" + type;
 	            	// 팝업창이 닫혔을 때 JQuary load()를 통해 list.jsp 갱신
 		        	popUpCloseHandler(uri, popupName, write, options, function(popup) {
 		        		$("#aboard-list-container").load("/myweb/aboard/list"); // 글작성 후엔 최신 페이지로

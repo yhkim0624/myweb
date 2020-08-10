@@ -6,6 +6,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.beans.factory.annotation.Qualifier;
 
+import com.huation.myweb.vo.ABoardCommentVO;
 import com.huation.myweb.vo.ABoardVO;
 
 @Mapper
@@ -23,5 +24,25 @@ public interface ABoardMapper {
 	void updateABoardReadCount(int boardNo);
 
 	void updateABoardByABoardNo(ABoardVO aBoard);
+
+	void deleteABoardByABoardNo(int boardNo);
+
+	void updateSno(ABoardVO prABoard);
+
+	void insertReABoard(ABoardVO aBoard);
+
+	void insertABoardComment(ABoardCommentVO comment);
+
+	List<ABoardCommentVO> selectABoardCommentsByBoardNo(int aBoardNo);
+
+	void updateABoardComment(ABoardCommentVO comment);
+
+	ABoardCommentVO selectABoardCommentByCommentNo(int prCommentNo);
+
+	void updateCommentSno(ABoardCommentVO prComment);
+
+	void insertABoardReComment(ABoardCommentVO comment);
+
+	void deleteComment(int commentNo);
 
 }

@@ -79,9 +79,10 @@
             	submitContents();
             	
             	var values = $('#writeForm').serializeArray();
+            	var type = "write"
 
                 $.ajax({
-                    url: "/myweb/aboard/write",
+                    url: "/myweb/aboard?type=" + type,
                     type: "POST",
                     data: values,
                     success: function (data, status, xhr) {

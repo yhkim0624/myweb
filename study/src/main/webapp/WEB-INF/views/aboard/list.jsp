@@ -17,10 +17,10 @@
 	<c:forEach var="aBoard" items="${ not empty boards ?  boards : aBoards }">
 	    <tr style="height:30px;">
 	        <td>${ aBoard.boardNo }</td>
-	        <td style="text-align:left;padding-left:3px">
+	        <td style="text-align:left;padding-left:${ aBoard.depth * 20}px;">
 	            <c:choose>
 	                <c:when test="${ not aBoard.deleted }">
-	                    <a class="lists" href="detail?aboardno=${ aBoard.boardNo }&pageNo=${ pager.pageNo }">
+	                    <a class="lists" href="/myweb/aboard/${ aBoard.boardNo }?pageNo=${ pager.pageNo }">
 	                        ${ aBoard.title }
 	                    </a>
 	                </c:when>
