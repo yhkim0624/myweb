@@ -33,7 +33,7 @@
 			<li><a href="/myweb/nboard/list">Board1</a></li>
 			<li><a href="/myweb/aboard/main">Board2</a></li>
 			<li><a href="/myweb/chart">Graph</a></li>
-			<li><a href="#">Chat</a></li>
+			<li><a href="/myweb/chat">Chat</a></li>
 		</ul>
 	</div>
 </div>

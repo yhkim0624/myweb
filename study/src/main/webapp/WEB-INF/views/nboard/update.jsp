@@ -49,7 +49,7 @@
 	                                <c:forEach var="file" items="${ nBoard.uploadFiles }">
 	                                    <a href="download?file-no=${ file.uploadFileNo }">${ file.userFileName }</a>
 	                                    (${ file.downloadCount })
-	                                    <a href="#" id="delete-file" file-no="${ file.uploadFileNo }">[삭제]</a><br>
+	                                    <a href="#" id="delete-file" data-no="${ file.uploadFileNo }">[삭제]</a><br>
 	                                </c:forEach>
 	                            </td>
 				            </tr>
@@ -129,7 +129,7 @@
 
 				$('#delete-file').on('click', function(event) {
 					event.preventDefault();
-					var fileNo = $('#delete-file').attr("file-no");
+					var fileNo = $('#delete-file').attr("data-no");
 					var boardNo = $('#board-no').val();
 					var deleteFileForm = makeForm("delete-file", fileNo, boardNo, "POST")
 					deleteFileForm.submit();

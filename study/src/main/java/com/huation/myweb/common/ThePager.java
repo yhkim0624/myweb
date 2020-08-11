@@ -33,12 +33,10 @@ public class ThePager {
 		
 		//1. 처음, 이전 항목 만들기
 		if (pageNo > 1) {
-			linkString.append(
-				String.format("[<a href='%s?pageNo=1'>처음</a>]",linkUrl));
+			linkString.append("[<a href='#' id='first'>처음</a>]");
 			linkString.append("&nbsp;");
 			linkString.append("&nbsp;");
-			linkString.append(String.format(
-				"[<a href='%s?pageNo=%d'>이전</a>]", linkUrl, pageNo - 1));
+			linkString.append("[<a href='#' id='prev'>이전</a>]");
 			linkString.append("&nbsp;");
 		}
 		
@@ -53,7 +51,7 @@ public class ThePager {
 				linkString.append(String.format("[%d]", i));
 			} else { 
 				linkString.append(String.format(
-					"<a href='%s?pageNo=%d'>%d</a>", linkUrl, i, i));
+					"<a href='#' class='numPage'>%d</a>", i));
 			}
 			linkString.append("&nbsp;");
 		}
@@ -61,12 +59,10 @@ public class ThePager {
 		//3. 다음, 마지막 항목 만들기
 		if (pageNo < pageCount) {
 			linkString.append("&nbsp;");
-			linkString.append(String.format(
-				"[<a href='%s?pageNo=%d'>다음</a>]",linkUrl, pageNo + 1));
+			linkString.append("[<a href='#' id='next'>다음</a>]");
 			linkString.append("&nbsp;");
 			linkString.append("&nbsp;");
-			linkString.append(String.format(
-				"[<a href='%s?pageNo=%d'>마지막</a>]", linkUrl, pageCount));
+			linkString.append("[<a href='#' id='last'>마지막</a>]");
 		}
 		
 		return linkString.toString();

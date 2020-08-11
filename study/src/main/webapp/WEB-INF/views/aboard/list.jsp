@@ -47,3 +47,79 @@
 		</tr>
 	</tfoot>
 </table>
+
+<script type="text/javascript">
+	$(function() {
+		// Page 처리 : [숫자페이지]
+		$(document).on('click', '.numPage', function(event) {
+			var pageNo = $(this).html();
+			console.log(pageNo);
+    		$.ajax({
+                url: "/myweb/aboard/list?pageNo=" + pageNo,
+                type: "GET",
+                success: function (data, status, xhr) {
+                	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + pageNo);
+                },
+                error: function (xhr, status, err) {
+                    alert('페이지 불러오기 실패');
+                }
+            });
+        });
+		
+		// Page 처리 : [처음]
+    	$(document).on('click', '#first', function(event) {
+    		$.ajax({
+                url: "/myweb/aboard/list?pageNo=1",
+                type: "GET",
+                success: function (data, status, xhr) {
+                	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=1");
+                },
+                error: function (xhr, status, err) {
+                    alert('페이지 불러오기 실패');
+                }
+            });
+        });
+
+    	// Page 처리 : [이전]
+    	$(document).on('click', '#prev', function(event) {
+    		$.ajax({
+                url: "/myweb/aboard/list?pageNo=" + ${ pageNo - 1 },
+                type: "GET",
+                success: function (data, status, xhr) {
+                	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + ${ pageNo - 1 });
+                },
+                error: function (xhr, status, err) {
+                    alert('페이지 불러오기 실패');
+                }
+            });
+        });
+
+    	// Page 처리 : [다음]
+    	$(document).on('click', '#next', function(event) {
+    		$.ajax({
+                url: "/myweb/aboard/list?pageNo=" + ${ pageNo + 1 },
+                type: "GET",
+                success: function (data, status, xhr) {
+                	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + ${ pageNo + 1 });
+                },
+                error: function (xhr, status, err) {
+                    alert('페이지 불러오기 실패');
+                }
+            });
+        });
+
+		// Page 처리 : [마지막]
+        $(document).on('click', '#last', function(event) {
+    		$.ajax({
+                url: "/myweb/aboard/list?pageNo=" + ${ pager.pageCount },
+                type: "GET",
+                success: function (data, status, xhr) {
+                	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + ${ pager.pageCount });
+                },
+                error: function (xhr, status, err) {
+                    alert('페이지 불러오기 실패');
+                }
+            });
+        });
+	});
+</script>

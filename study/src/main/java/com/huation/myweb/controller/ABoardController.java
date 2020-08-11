@@ -67,7 +67,7 @@ public class ABoardController {
 	}
 
 	@GetMapping(path = { "/list" })
-	public String showABoardList(@RequestParam(defaultValue = "1") int pageNo, Model model) {
+	public String showABoardList(@RequestParam(defaultValue = "1") int pageNo, Model model, HttpSession session) {
 
 		System.out.println("Call list...");
 
@@ -95,6 +95,8 @@ public class ABoardController {
 		// (실제로는 Request 객체에 데이터 저장)
 		model.addAttribute("aBoards", boards);
 		model.addAttribute("pager", pager);
+		System.out.println(pageNo);
+		session.setAttribute("pageNo", pageNo);
 
 		return "aboard/list";
 	}

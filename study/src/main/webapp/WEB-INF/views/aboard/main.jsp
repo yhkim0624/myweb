@@ -30,6 +30,20 @@
         <div style="padding-top:25px;text-align:center">
             <h2>게시판 2 (AJAX)</h2>
             <br />
+            <div style="float:right;margin-right:100px;">
+                <div class="dataTables_length" id="dataTable_length" style="margin-bottom:15px">
+                    <form action="list" method="get">
+                        <select name="searchType" style="height:24px">
+                            <option value="T" ${ param.searchType=='T' ? 'selected' : '' }>제목</option>
+                            <option value="C" ${ param.searchType=='C' ? 'selected' : '' }>내용</option>
+                            <option value="TC" ${ param.searchType=='TC' ? 'selected' : '' }>제목+내용</option>
+                            <option value="W" ${ param.searchType=='W' ? 'selected' : '' }>작성자</option>
+                        </select>
+                        <input type="search" name="searchKey" placeholder="" value="${ param.searchKey }" />
+                        <input type="submit" value="검색" />
+                    </form>
+                </div>
+            </div>
             <div id="aboard-list-container">
             	<%-- <jsp:include page="list.jsp" /> --%>
             </div>
@@ -68,6 +82,8 @@
 
             // JQuery load()를 통해 list.jsp 삽입
         	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + ${ pager.pageNo });
+
+            
             
         	$(document).on('click', '#write', function(event) {
             	
