@@ -32,7 +32,7 @@
             <br />
             <div style="float:right;margin-right:100px;">
                 <div class="dataTables_length" id="dataTable_length" style="margin-bottom:15px">
-                    <form action="list" method="get">
+                    <form id="searchForm">
                         <select name="searchType" style="height:24px">
                             <option value="T" ${ param.searchType=='T' ? 'selected' : '' }>제목</option>
                             <option value="C" ${ param.searchType=='C' ? 'selected' : '' }>내용</option>
@@ -40,7 +40,7 @@
                             <option value="W" ${ param.searchType=='W' ? 'selected' : '' }>작성자</option>
                         </select>
                         <input type="search" name="searchKey" placeholder="" value="${ param.searchKey }" />
-                        <input type="submit" value="검색" />
+                        <input type="button" id="searchBtn" value="검색" />
                     </form>
                 </div>
             </div>
