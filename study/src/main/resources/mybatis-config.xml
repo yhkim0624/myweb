@@ -16,6 +16,7 @@
 		<typeAlias type="com.huation.myweb.vo.NBoardCommentVO" alias="NBoardCommentVO" />
 		<typeAlias type="com.huation.myweb.vo.ABoardVO" alias="ABoardVO" />
 		<typeAlias type="com.huation.myweb.vo.ABoardCommentVO" alias="ABoardCommentVO" />
+		<typeAlias type="com.huation.myweb.vo.ChartVO" alias="ChartVO" />
 	</typeAliases>
 	
 </configuration>
