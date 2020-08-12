@@ -110,8 +110,6 @@ public class NBoardServiceImpl implements NBoardService {
 
 		List<NBoardVO> nBoardList = nBoardMapper.selectNBoardWithPaging(params);
 		
-		System.out.println(nBoardList.get(nBoardList.size() - 1).getRegDate());
-		
 		return nBoardList;
 	}
 

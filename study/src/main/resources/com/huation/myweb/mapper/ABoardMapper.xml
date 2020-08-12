@@ -6,6 +6,27 @@
 
 <mapper namespace="com.huation.myweb.mapper.ABoardMapper">
 
+	<!-- sql : 재사용 할 수 있는 SQL 블럭 -->
+	<sql id="searchCondition">
+		<!-- 동적 SQL 사용 -->
+		<trim prefix="WHERE">
+			<choose>
+				<when test="searchType == 'T'.toString()">
+					title LIKE '%'||#{searchKey}||'%'
+				</when>
+				<when test="searchType == 'C'.toString()">
+					content LIKE '%'||#{searchKey}||'%'
+				</when>
+				<when test="searchType == 'TC'.toString()">
+					( title LIKE '%'||#{searchKey}||'%' OR content LIKE '%'||#{searchKey}||'%' )
+				</when>
+				<when test="searchType == 'W'.toString()">
+					writer LIKE '%'||#{searchKey}||'%'
+				</when>
+			</choose>
+		</trim>
+	</sql>
+
 	<resultMap type="ABoardVO" id="aBoardMap">
 		<id column="board_no" property="boardNo" />
 		<result column="title" property="title" />
@@ -72,6 +93,7 @@
 			FROM (
 				SELECT *
 				FROM aboard
+				<include refid="searchCondition" />
 				ORDER BY group_no
 			) a
 		)
@@ -82,9 +104,10 @@
 	</select>
 
 	<!-- 전체 게시물 갯수 조회 -->
-	<select id="selectABoardCount" resultType="int">
+	<select id="selectABoardCount" parameterType="hashmap" resultType="int">
 		SELECT COUNT(*)
 		FROM aboard
+		<include refid="searchCondition" />
 	</select>
 
 	<!-- 상세보기 -->

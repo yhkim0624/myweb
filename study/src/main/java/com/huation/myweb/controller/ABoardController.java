@@ -35,10 +35,11 @@ public class ABoardController {
 	@GetMapping(path = { "/main" })
 	public String showABoardMain(@RequestParam(defaultValue = "1") int pageNo, Model model) {
 
-		System.out.println("Call main... pageNo=" + pageNo);
+		System.out.println("Call main...");
 
 		HashMap<String, Object> params = new HashMap<>();
-		int boardCount = aBoardService.findABoardCount();
+
+		int boardCount = aBoardService.findABoardCount(params);
 
 		int pageSize = 5;
 		int pagerSize = 5;
@@ -49,14 +50,13 @@ public class ABoardController {
 			end = 1;
 		}
 
-		System.out.printf("beginning: %d, end: %d\n", beginning, end);
 		params.put("beginning", beginning);
 		params.put("end", end);
 
 		// 데이터 조회 (서비스에 요청)
 		List<ABoardVO> boards = aBoardService.findABoardWithPaging(params);
 
-		ThePager pager = new ThePager(boardCount, pageNo, pageSize, pagerSize, "main");
+		ThePager pager = new ThePager(boardCount, pageNo, pageSize, pagerSize);
 
 		// Model 타입 전달인자에 데이터 저장 -> View로 전달
 		// (실제로는 Request 객체에 데이터 저장)
@@ -67,12 +67,19 @@ public class ABoardController {
 	}
 
 	@GetMapping(path = { "/list" })
-	public String showABoardList(@RequestParam(defaultValue = "1") int pageNo, Model model, HttpSession session) {
+	public String showABoardList(@RequestParam(defaultValue = "1") int pageNo,
+			@RequestParam(required = false) String searchType, @RequestParam(required = false) String searchKey,
+			Model model) {
 
 		System.out.println("Call list...");
+		System.out.println("searchType = " + searchType);
+		System.out.println("searchKey = " + searchKey);
 
 		HashMap<String, Object> params = new HashMap<>();
-		int boardCount = aBoardService.findABoardCount();
+		params.put("searchType", searchType);
+		params.put("searchKey", searchKey);
+
+		int boardCount = aBoardService.findABoardCount(params);
 
 		int pageSize = 5;
 		int pagerSize = 5;
@@ -89,14 +96,12 @@ public class ABoardController {
 		// 데이터 조회 (서비스에 요청)
 		List<ABoardVO> boards = aBoardService.findABoardWithPaging(params);
 
-		ThePager pager = new ThePager(boardCount, pageNo, pageSize, pagerSize, "main");
+		ThePager pager = new ThePager(boardCount, pageNo, pageSize, pagerSize);
 
 		// Model 타입 전달인자에 데이터 저장 -> View로 전달
 		// (실제로는 Request 객체에 데이터 저장)
 		model.addAttribute("aBoards", boards);
 		model.addAttribute("pager", pager);
-		System.out.println(pageNo);
-		session.setAttribute("pageNo", pageNo);
 
 		return "aboard/list";
 	}
@@ -249,7 +254,7 @@ public class ABoardController {
 
 		return "success";
 	}
-	
+
 	@DeleteMapping(path = { "/reply/{rno}" })
 	@ResponseBody
 	public String deleteABoardComment(@PathVariable int rno) {

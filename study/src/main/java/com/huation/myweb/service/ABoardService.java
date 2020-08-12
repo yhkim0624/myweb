@@ -8,7 +8,7 @@ import com.huation.myweb.vo.ABoardVO;
 
 public interface ABoardService {
 
-	int findABoardCount();
+	int findABoardCount(HashMap<String, Object> params);
 
 	List<ABoardVO> findABoardWithPaging(HashMap<String, Object> params);
 

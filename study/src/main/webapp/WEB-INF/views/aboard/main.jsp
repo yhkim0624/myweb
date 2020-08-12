@@ -32,20 +32,18 @@
             <br />
             <div style="float:right;margin-right:100px;">
                 <div class="dataTables_length" id="dataTable_length" style="margin-bottom:15px">
-                    <form id="searchForm">
-                        <select name="searchType" style="height:24px">
-                            <option value="T" ${ param.searchType=='T' ? 'selected' : '' }>제목</option>
-                            <option value="C" ${ param.searchType=='C' ? 'selected' : '' }>내용</option>
-                            <option value="TC" ${ param.searchType=='TC' ? 'selected' : '' }>제목+내용</option>
-                            <option value="W" ${ param.searchType=='W' ? 'selected' : '' }>작성자</option>
-                        </select>
-                        <input type="search" name="searchKey" placeholder="" value="${ param.searchKey }" />
-                        <input type="button" id="searchBtn" value="검색" />
-                    </form>
+	                <select id="searchType" name="searchType" style="height:24px">
+	                    <option value="T" ${ param.searchType == 'T' ? 'selected' : '' }>제목</option>
+	                    <option value="C" ${ param.searchType == 'C' ? 'selected' : '' }>내용</option>
+	                    <option value="TC" ${ param.searchType == 'TC' ? 'selected' : '' }>제목+내용</option>
+	                    <option value="W" ${ param.searchType == 'W' ? 'selected' : '' }>작성자</option>
+	                </select>
+	                <input type="search" id="searchKey" name="searchKey" placeholder="" value="${ param.searchKey }" />
+	                <input type="button" id="searchBtn" value="검색" />
                 </div>
             </div>
             <div id="aboard-list-container">
-            	<%-- <jsp:include page="list.jsp" /> --%>
+            	<jsp:include page="list.jsp" />
             </div>
             <br /><br /><br /><br /><br />
 
@@ -56,8 +54,52 @@
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script type="text/javascript">
 
-        $(function() {         
+        $(function() {
+        	
+        	// Page 처리 : [처음]
+        	$(document).on('click', '#first', function(event) {
+        		event.preventDefault();
+        		var searchType = $("#searchType").val() === null ? '' : "&searchType=" + $("#searchType").val();
+            	var searchKey = $("#searchKey").val() === null ? '' : "&searchKey=" + $("#searchKey").val();
+                $("#aboard-list-container").load("/myweb/aboard/list?pageNo=1" + searchType + searchKey);
+            });
+        	
+        	// Page 처리 : [숫자페이지]
+    		$(document).on('click', '.numPage', function(event) {
+    			event.preventDefault();
 
+    			var searchType = $("#searchType").val() === null ? '' : "&searchType=" + $("#searchType").val();
+            	var searchKey = $("#searchKey").val() === null ? '' : "&searchKey=" + $("#searchKey").val();
+    			var pageNo = $(this).html();
+    			
+                $("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + pageNo + searchType + searchKey);
+            });
+        	
+        	// Page 처리 : [마지막]
+            $(document).on('click', '#last', function(event) {
+            	event.preventDefault();
+
+            	var searchType = $("#searchType").val() === null ? '' : "&searchType=" + $("#searchType").val();
+            	var searchKey = $("#searchKey").val() === null ? '' : "&searchKey=" + $("#searchKey").val();
+            	var pageCount = $(this).data("count");
+            	
+            	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + pageCount + searchType + searchKey);
+            });
+
+			// 검색버튼 이벤트
+			$("#searchBtn").on('click', function(event) {
+				$.ajax({
+	                url: "/myweb/aboard/main",
+	                type: "GET",
+	                success: function (data, status, xhr) {
+	                	$("#aboard-list-container").load("/myweb/aboard/list?searchType=" + $("#searchType").val() + "&searchKey=" + $("#searchKey").val());
+	                },
+	                error: function (xhr, status, err) {
+	                    alert('검색 실패');
+	                }
+	            });
+			});
+        	
 			// 팝업창 설정
     		var uri = "about:blank";
         	var popupName = "_blank";
@@ -78,12 +120,7 @@
                     }
                 }, 1000);
                 return popup;
-	        }
-
-            // JQuery load()를 통해 list.jsp 삽입
-        	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + ${ pager.pageNo });
-
-            
+	        }            
             
         	$(document).on('click', '#write', function(event) {
             	

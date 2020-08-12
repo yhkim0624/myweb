@@ -20,9 +20,9 @@ public class ABoardServiceImpl implements ABoardService {
 	private ABoardMapper aBoardMapper;
 
 	@Override
-	public int findABoardCount() {
+	public int findABoardCount(HashMap<String, Object> params) {
 		
-		return aBoardMapper.selectABoardCount();
+		return aBoardMapper.selectABoardCount(params);
 	}
 
 	@Override

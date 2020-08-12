@@ -15,7 +15,7 @@ public interface ABoardMapper {
 
 	List<ABoardVO> selectABoardWithPaging(HashMap<String, Object> params);
 
-	int selectABoardCount();
+	int selectABoardCount(HashMap<String, Object> params);
 
 	void insertABoard(ABoardVO aBoard);
 
