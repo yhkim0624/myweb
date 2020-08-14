@@ -31,6 +31,7 @@ public class EchoHandler extends TextWebSocketHandler {
 		logger.info("from {}: {} received", session.getId(), message.getPayload());
 		// 모든 유저에게 message 출력
 		for (WebSocketSession ses : sessionList) {
+			System.out.println(message.getPayload());
 			ses.sendMessage(new TextMessage(message.getPayload()));
 		}
 	}

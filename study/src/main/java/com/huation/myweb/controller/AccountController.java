@@ -36,11 +36,11 @@ public class AccountController {
 		System.out.println(member);
 		
 		if (member == null) {
-			return "redirect:/register";
+			return "redirect: /myweb/register";
 		} else {			
 			memberService.registerMember(member);
 			
-			return "redirect:/login";
+			return "redirect: /myweb/login";
 		}
 	}
 	

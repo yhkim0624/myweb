@@ -18,6 +18,7 @@
 		<div id='content' style="text-align:center;">
 			<br /> <br /> <br />
 			<h2 style='text-align: center'>Chat</h2>
+			<input type="hidden" id="memberId" value="${ loginuser.memberId }"/>
 			<input type="text" id="message" />
 			<input type="button" id="sendBtn" value="submit"/>
 			<div id="messageArea"></div>
@@ -37,7 +38,7 @@
 		sock.onclose = onClose;
 		// 메시지 전송
 		function sendMessage() {
-			sock.send($("#message").val());
+			sock.send($("#memberId").val() + ": " + $("#message").val());
 		}
 		// 서버로부터 메시지를 받았을 때
 		function onMessage(msg) {

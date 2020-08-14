@@ -103,7 +103,9 @@
 			// 팝업창 설정
     		var uri = "about:blank";
         	var popupName = "_blank";
-        	var options = "width=900, height=600, left=200, top=100, location=no, menubar=no, status=no, toolbar=no";
+        	var popupX = (window.screen.width / 2) - (900 / 2);
+        	var popupY= (window.screen.height / 2) - (600 / 2);
+        	var options = `width=900, height=600, left=${popupX}, top=${popupY}, location=no, menubar=no, status=no, toolbar=no`;
         	
         	// 팝업창을 감시해서 닫히면(close) => closeCallback()
         	var popUpCloseHandler = function(uri, name, location, options, closeCallback) {
@@ -143,17 +145,13 @@
 		        if (${ empty loginuser }) {
 					location.href = "/myweb/login";
 				} else {
-					var list = $(this).attr("href");
+					var list = "/myweb/aboard/" + $(this).data("bno");
 					console.log(list);
 					popUpCloseHandler(uri, popupName, list, options, function(popup) {
 						$("#aboard-list-container").load("/myweb/aboard/list");
 					});
 				}
 		    });
-            
-            if (${ empty loginuser }) {
-            	$(".lists").attr("href", "/myweb/login");
-        	}
         	
 		});
 

@@ -1,5 +1,7 @@
 package com.huation.myweb.controller;
 
+import javax.servlet.http.HttpSession;
+
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -9,9 +11,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class ChatController {
 	
 	@GetMapping
-	public String showChatPage() {
+	public String showChatPage(HttpSession session) {
 		
-		return "chat/chat";
+		if (session.getAttribute("loginuser") == null) {
+			return "redirect: /myweb/login";
+		} else {
+			return "chat/chat";
+		}
 	}
 	
 }

@@ -20,7 +20,7 @@
 	        <td style="text-align:left;padding-left:${ aBoard.depth * 20}px;">
 	            <c:choose>
 	                <c:when test="${ not aBoard.deleted }">
-	                    <a class="lists" href="#">
+	                    <a class="lists" href="#" data-bno="${ aBoard.boardNo }">
 	                        ${ aBoard.title }
 	                    </a>
 	                </c:when>

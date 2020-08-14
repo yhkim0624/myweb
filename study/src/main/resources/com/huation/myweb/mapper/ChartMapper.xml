@@ -9,7 +9,7 @@
 	<select id="selectCountNBoardByRegDate" resultType="ChartVO">
 		SELECT COUNT(*) as date_count, TO_CHAR(reg_date, 'YYYY-MM-DD') as reg_date
 		FROM nboard
-		WHERE reg_date >= '2020-07-31' AND reg_date <![CDATA[ < TO_CHAR(sysdate, 'YYYY-MM-DD') ]]>
+		WHERE reg_date >= '2020-07-31'
 		GROUP BY TO_CHAR(reg_date, 'YYYY-MM-DD')
 		ORDER BY reg_date
 	</select>
