@@ -30,6 +30,16 @@
         <div style="padding-top:25px;text-align:center">
             <h2>게시판 2 (AJAX)</h2>
             <br />
+            <div style="float:left;margin-left:50px;font-size:12pt;">
+            	<span>show: </span>
+            	<select id="pageSize" name="pageSize" style="height:24px">
+	                <option value="5" ${ param.pageSize == '5' ? 'selected' : '' }>5</option>
+	                <option value="10" ${ param.pageSize == '10' ? 'selected' : '' }>10</option>
+	                <option value="20" ${ param.pageSize == '20' ? 'selected' : '' }>20</option>
+	                <option value="100" ${ param.pageSize == '100' ? 'selected' : '' }>100</option>
+	                <option value="all" ${ param.pageSize == 'all' ? 'selected' : '' }>전체</option>
+	        	</select>
+            </div>
             <div style="float:right;margin-right:100px;">
                 <div class="dataTables_length" id="dataTable_length" style="margin-bottom:15px">
 	                <select id="searchType" name="searchType" style="height:24px">
@@ -152,6 +162,20 @@
 					});
 				}
 		    });
+
+	        // 페이지 셀럭터 이벤트
+		    $("#pageSize").change(function(event) {
+		    	$.ajax({
+	                url: "/myweb/aboard/main",
+	                type: "GET",
+	                success: function (data, status, xhr) {
+	                	$("#aboard-list-container").load("/myweb/aboard/list?searchType=" + $("#searchType").val() + "&searchKey=" + $("#searchKey").val() + "&pageSize=" + $("#pageSize").val());
+	                },
+	                error: function (xhr, status, err) {
+	                    alert('페이지 변경 실패');
+	                }
+	            });
+			});
         	
 		});
 

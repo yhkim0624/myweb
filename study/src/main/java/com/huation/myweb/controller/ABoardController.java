@@ -69,7 +69,7 @@ public class ABoardController {
 	@GetMapping(path = { "/list" })
 	public String showABoardList(@RequestParam(defaultValue = "1") int pageNo,
 			@RequestParam(required = false) String searchType, @RequestParam(required = false) String searchKey,
-			Model model) {
+			@RequestParam(defaultValue = "5") String pageSize, Model model) {
 
 		System.out.println("Call list...");
 		System.out.println("searchType = " + searchType);
@@ -78,13 +78,19 @@ public class ABoardController {
 		HashMap<String, Object> params = new HashMap<>();
 		params.put("searchType", searchType);
 		params.put("searchKey", searchKey);
+		params.put("pageSize", pageSize);
 
 		int boardCount = aBoardService.findABoardCount(params);
 
-		int pageSize = 5;
+		int numPageSize = 0;
+		if (pageSize.equals("all")) {
+			numPageSize = boardCount;
+		} else {
+			numPageSize = Integer.parseInt(pageSize);
+		}
 		int pagerSize = 5;
-		int beginning = boardCount - (pageNo - 1) * pageSize;
-		int end = (boardCount - pageNo * pageSize) + 1;
+		int beginning = boardCount - (pageNo - 1) * numPageSize;
+		int end = (boardCount - pageNo * numPageSize) + 1;
 
 		if (end < 1) {
 			end = 1;
@@ -96,7 +102,7 @@ public class ABoardController {
 		// 데이터 조회 (서비스에 요청)
 		List<ABoardVO> boards = aBoardService.findABoardWithPaging(params);
 
-		ThePager pager = new ThePager(boardCount, pageNo, pageSize, pagerSize);
+		ThePager pager = new ThePager(boardCount, pageNo, numPageSize, pagerSize);
 
 		// Model 타입 전달인자에 데이터 저장 -> View로 전달
 		// (실제로는 Request 객체에 데이터 저장)
