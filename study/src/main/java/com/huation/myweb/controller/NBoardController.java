@@ -118,36 +118,39 @@ public class NBoardController {
 	}
 
 	@PostMapping(path = { "/write" })
-	public String writeNBoard(@RequestParam("attach") MultipartFile userFile, HttpServletRequest req, NBoardVO nBoard,
-			UploadFileVO uploadFile) {
+	public String writeNBoard(@RequestParam("attach") List<MultipartFile> userFiles, HttpServletRequest req,
+			NBoardVO nBoard, UploadFileVO uploadFile) {
 
 		System.out.println(nBoard);
-		System.out.println(userFile);
+		System.out.println(userFiles);
 
 		int newBoardNo = nBoardService.writeNBoard(nBoard);
 
 		System.out.println(newBoardNo);
 
-		if (!userFile.isEmpty()) {
-			ServletContext application = req.getServletContext();
-			String path = application.getRealPath("resources/file/upload-files");
-			String userFileName = userFile.getOriginalFilename();
-			String savedFileName = Util.makeUniqueFileName(userFileName);
+		if (!userFiles.isEmpty()) {
+			for (MultipartFile userFile : userFiles) {
+				ServletContext application = req.getServletContext();
+				String path = application.getRealPath("resources/file/upload-files");
+				String userFileName = userFile.getOriginalFilename();
+				String savedFileName = Util.makeUniqueFileName(userFileName);
 
-			try {
-				File file = new File(path, savedFileName);
-				userFile.transferTo(file);
-			} catch (Exception ex) {
-				ex.printStackTrace();
+				try {
+					File file = new File(path, savedFileName);
+					userFile.transferTo(file);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+
+				uploadFile.setBoardNo(newBoardNo);
+				uploadFile.setSavedFileName(savedFileName);
+				uploadFile.setUserFileName(userFileName);
+
+				System.out.println(uploadFile);
+
+				nBoardService.uploadFile(uploadFile);
+
 			}
-
-			uploadFile.setBoardNo(newBoardNo);
-			uploadFile.setSavedFileName(savedFileName);
-			uploadFile.setUserFileName(userFileName);
-
-			System.out.println(uploadFile);
-
-			nBoardService.uploadFile(uploadFile);
 
 		}
 
@@ -235,44 +238,45 @@ public class NBoardController {
 		if (nBoard == null) {
 			return "redirect: /myweb/nboard/list";
 		}
-		
+
 		session.setAttribute("nBoard", nBoard);
 
 		return "nboard/update";
 	}
 
 	@PostMapping(path = { "/update" })
-	public String updateNBoard(@RequestParam("attach") MultipartFile userFile, HttpServletRequest req, NBoardVO nBoard,
+	public String updateNBoard(@RequestParam("attachs[]") List<MultipartFile> userFiles, HttpServletRequest req, NBoardVO nBoard,
 			UploadFileVO uploadFile) {
 
 		int boardNo = nBoard.getBoardNo();
-		
+
 		System.out.println("NBoard update..." + boardNo);
 		System.out.println(nBoard);
 
 		nBoardService.updateNBoard(nBoard);
-		
-		if (!userFile.isEmpty()) {
-			ServletContext application = req.getServletContext();
-			String path = application.getRealPath("resources/file/upload-files");
-			String userFileName = userFile.getOriginalFilename();
-			String savedFileName = Util.makeUniqueFileName(userFileName);
 
-			try {
-				File file = new File(path, savedFileName);
-				userFile.transferTo(file);
-			} catch (Exception ex) {
-				ex.printStackTrace();
+		if (!userFiles.isEmpty()) {
+			for (MultipartFile userFile : userFiles) {
+				ServletContext application = req.getServletContext();
+				String path = application.getRealPath("resources/file/upload-files");
+				String userFileName = userFile.getOriginalFilename();
+				String savedFileName = Util.makeUniqueFileName(userFileName);
+	
+				try {
+					File file = new File(path, savedFileName);
+					userFile.transferTo(file);
+				} catch (Exception ex) {
+					ex.printStackTrace();
+				}
+	
+				uploadFile.setBoardNo(boardNo);
+				uploadFile.setSavedFileName(savedFileName);
+				uploadFile.setUserFileName(userFileName);
+	
+				System.out.println(uploadFile);
+	
+				nBoardService.uploadFile(uploadFile);
 			}
-
-			uploadFile.setBoardNo(boardNo);
-			uploadFile.setSavedFileName(savedFileName);
-			uploadFile.setUserFileName(userFileName);
-
-			System.out.println(uploadFile);
-
-			nBoardService.uploadFile(uploadFile);
-
 		}
 
 		return "redirect: /myweb/nboard/list";
@@ -335,37 +339,38 @@ public class NBoardController {
 	public String showReplyUpdateForm(@RequestParam("rno") int rno, HttpSession session) {
 
 		NBoardCommentVO comment = nBoardService.showReplyDetail(rno);
-		
+
 		session.setAttribute("comment", comment);
-		
+
 		return "nboard/re-reply";
 	}
-	
+
 	@PostMapping(path = { "/modify-reply" })
 	public String modifyReply(NBoardCommentVO comment, RedirectAttributes redirect) {
-		
+
 		nBoardService.modifyReply(comment);
-		
+
 		redirect.addAttribute("nboardno", comment.getBoardNo());
-		
+
 		return "redirect: detail";
 	}
-	
+
 	@GetMapping(path = { "/re-reply" })
 	public String showReReplyForm(@RequestParam("rno") int rno, HttpSession session) {
-		
+
 		NBoardCommentVO comment = nBoardService.showReplyDetail(rno);
-		
+
 		session.removeAttribute("comment");
 		session.setAttribute("commentNo", comment.getCommentNo());
 		session.setAttribute("stepNo", comment.getReplySno());
-		
+
 		return "nboard/re-reply";
 	}
-	
+
 	@PostMapping(path = { "/re-reply" })
-	public String writeReReply(@RequestParam("prCommentNo") int prCommentNo, NBoardCommentVO comment, RedirectAttributes redirect) {
-		
+	public String writeReReply(@RequestParam("prCommentNo") int prCommentNo, NBoardCommentVO comment,
+			RedirectAttributes redirect) {
+
 		if (comment.getReplier() == null) {
 			return "redirect: /myweb/login";
 		} else {
@@ -376,7 +381,7 @@ public class NBoardController {
 			return "redirect: detail";
 		}
 	}
-	
+
 	// 페이징 테이블 기반 엑셀 다운로드
 //	@PostMapping(path = { "/excel-down" })
 //	public void excelDown(HttpServletRequest request, HttpServletResponse response,
@@ -458,31 +463,31 @@ public class NBoardController {
 //	    }
 //	 
 //	}
-	
+
 	@PostMapping(path = { "/excel-down" })
-    public void listExcel(@ModelAttribute("nBoard") NBoardVO nBoard,
-            HttpServletResponse response) throws IOException {
-		
+	public void listExcel(@ModelAttribute("nBoard") NBoardVO nBoard, HttpServletResponse response) throws IOException {
+
 		final String sample = "/excel/sample.xlsx";
 		OutputStream os = null;
 		InputStream is = null;
-		
+
 		is = new ClassPathResource(sample).getInputStream();
 
-	    Map<String, Object> beans = new HashMap<>();
+		Map<String, Object> beans = new HashMap<>();
 
-	    List<NBoardVO> list = nBoardService.findNBoardAll();
+		List<NBoardVO> list = nBoardService.findNBoardAll();
 
-	    beans.put("nBoardList", list);
+		beans.put("nBoardList", list);
 
-	    response.setHeader("Set-Cookie", "fileDownload=false; path=/");
-	    response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
-	    response.setHeader("Content-Disposition", String.format("attachment; filename=\"%s\"", URLEncoder.encode("일반게시판", "UTF-8")+".xlsx"));
+		response.setHeader("Set-Cookie", "fileDownload=false; path=/");
+		response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+		response.setHeader("Content-Disposition",
+				String.format("attachment; filename=\"%s\"", URLEncoder.encode("일반게시판", "UTF-8") + ".xlsx"));
 
-	    os = response.getOutputStream();
+		os = response.getOutputStream();
 
 		XLSTransformer transformer = new XLSTransformer();
-	    try {
+		try {
 			Workbook excel = transformer.transformXLS(is, beans);
 			excel.write(os);
 			os.flush();
@@ -504,22 +509,22 @@ public class NBoardController {
 				}
 			}
 		}
-    }
-	
+	}
+
 	@PostMapping(path = { "/excel-up" })
 	public String excelUp(@RequestParam("excelFile") MultipartFile excelFile, HttpServletRequest req) {
-		
+
 		System.out.println("Excel File Upload...");
-		
-		if ( excelFile == null || excelFile.isEmpty() ) {
-            return "redirect: /myweb/nboard/list";
-        }
-		
+
+		if (excelFile == null || excelFile.isEmpty()) {
+			return "redirect: /myweb/nboard/list";
+		}
+
 		ServletContext application = req.getServletContext();
 		String path = application.getRealPath("resources/file/excel");
 		String userFileName = excelFile.getOriginalFilename();
 		String savedFileName = Util.makeUniqueFileName(userFileName);
-		
+
 		try {
 			File file = new File(path, savedFileName);
 			excelFile.transferTo(file);
@@ -527,17 +532,16 @@ public class NBoardController {
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
-		
+
 		return "redirect: /myweb/nboard/list";
 	}
-	
+
 	@PostMapping(path = { "/delete-file" })
 	public String deleteFileByUploadFileNo(@RequestParam("file-no") int fileNo, @RequestParam("board-no") int boardNo) {
-		
+
 		nBoardService.deleteFileByUploadFileNo(fileNo);
-		
+
 		return "redirect: /myweb/nboard/update?nboardno=" + boardNo;
 	}
-
 
 }

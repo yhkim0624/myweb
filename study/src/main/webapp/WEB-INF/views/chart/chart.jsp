@@ -10,13 +10,16 @@
 <title>Home</title>
 <link rel='Stylesheet' href='/myweb/resources/css/default.css' />
 <style>
+	#chart-container {
+		float: right;
+		position: relative;
+		left: -50%;
+	}
 	canvas {
-	    padding-left: 0;
-	    padding-right: 0;
-	    margin-left: auto;
-	    margin-right: auto;
-	    display: block;
-	    width: 800px;
+	    float: left;
+	    width: 40%;
+	    position: relative;
+	    left: 60%;
 	}
 </style>
 </head>
@@ -31,9 +34,9 @@
 			<h2 style='text-align:center'>Chart.js</h2>
 			<br /><br /><br />
 			<div id="chart-container">
-				<canvas id="myChart"></canvas><br>
-				<canvas id="myChart2"></canvas><br>
-				<canvas id="myChart3"></canvas><br>
+				<canvas id="myChart"></canvas>
+				<canvas id="myChart2"></canvas>
+				<canvas id="myChart3"></canvas>
 				<canvas id="myChart4"></canvas>
 			</div>
 		</div>
@@ -92,17 +95,20 @@
 						myData.push(item.dateCount);
 					});
 
+					var newLabels = labels.slice(-5);
+					var newMyData = myData.slice(-5);
+
 					// Chart.js 막대그래프 그리기
 					var ctx = $('#myChart');
-					makeChart(ctx, 'bar', labels, myData);
+					makeChart(ctx, 'bar', newLabels, newMyData);
 					// Chart.js 선그래프 그리기
 					ctx = $('#myChart2');
-					makeChart(ctx, 'line', labels, myData);
+					makeChart(ctx, 'line', newLabels, newMyData);
 					// Chart.js 원그래프 그리기
 					ctx = $('#myChart3');
-					makeChart(ctx, 'pie', labels, myData);
+					makeChart(ctx, 'pie', newLabels, newMyData);
 					ctx = $('#myChart4');
-					makeChart(ctx, 'doughnut', labels, myData);
+					makeChart(ctx, 'doughnut', newLabels, newMyData);
 				}
 			});
 			

@@ -48,6 +48,9 @@
                                 </td>
                             </tr>
                             <tr>
+                            	<th><input type="button" class="addFileInput" value="+" style="width:25px;height:25px;" /></th>
+                            </tr>
+                            <tr>
                                 <th>내용</th>
                                 <td>
                                     <textarea id="content" name="content" rows="20"></textarea>
@@ -95,6 +98,17 @@
             $('#cancel').on('click', function (event) {
                 //history.back();
                 location.href = "list";
+            });
+
+            // 첨부파일 추가
+            $(document).on('click', '.addFileInput', function(event) {
+                $(this).closest('tr').append('<td><input type="file" name="attach" style="height:25px;" /></td>');
+                $(this).closest('tr').next().before('<tr><th><input type="button" class="addFileInput" value="+" style="width:25px;height:25px;" /></th></tr>');
+                $(this).val('-').removeClass('addFileInput').addClass('removeFileInput');
+            });
+
+            $(document).on('click', '.removeFileInput', function(event) {
+                $(this).closest('tr').remove();
             });
         });
     </script>

@@ -32,7 +32,9 @@ public class EchoHandler extends TextWebSocketHandler {
 		// 모든 유저에게 message 출력
 		for (WebSocketSession ses : sessionList) {
 			System.out.println(message.getPayload());
-			ses.sendMessage(new TextMessage(message.getPayload()));
+			if (message.getPayload().contains(":")) {
+				ses.sendMessage(new TextMessage(message.getPayload()));
+			}
 		}
 	}
 	

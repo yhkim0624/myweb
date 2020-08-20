@@ -55,7 +55,7 @@
 				            </tr>
 				            <tr>
                                 <td>
-                                    <input type="file" name="attach" style="height:25px;" />
+                                    <input type="file" multiple="multiple" name="attachs[]" style="height:25px;" />
                                 </td>
 				            </tr>
 				            <tr>
