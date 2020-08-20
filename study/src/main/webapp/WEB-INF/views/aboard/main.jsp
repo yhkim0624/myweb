@@ -71,7 +71,9 @@
         		event.preventDefault();
         		var searchType = $("#searchType").val() === null ? '' : "&searchType=" + $("#searchType").val();
             	var searchKey = $("#searchKey").val() === null ? '' : "&searchKey=" + $("#searchKey").val();
-                $("#aboard-list-container").load("/myweb/aboard/list?pageNo=1" + searchType + searchKey);
+            	var pageSize = "&pageSize=" + $("#pageSize").val();
+            	
+                $("#aboard-list-container").load("/myweb/aboard/list?pageNo=1" + searchType + searchKey + pageSize);
             });
         	
         	// Page 처리 : [숫자페이지]
@@ -81,8 +83,9 @@
     			var searchType = $("#searchType").val() === null ? '' : "&searchType=" + $("#searchType").val();
             	var searchKey = $("#searchKey").val() === null ? '' : "&searchKey=" + $("#searchKey").val();
     			var pageNo = $(this).html();
+    			var pageSize = "&pageSize=" + $("#pageSize").val();
     			
-                $("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + pageNo + searchType + searchKey);
+                $("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + pageNo + searchType + searchKey + pageSize);
             });
         	
         	// Page 처리 : [마지막]
@@ -92,8 +95,9 @@
             	var searchType = $("#searchType").val() === null ? '' : "&searchType=" + $("#searchType").val();
             	var searchKey = $("#searchKey").val() === null ? '' : "&searchKey=" + $("#searchKey").val();
             	var pageCount = $(this).data("count");
+    			var pageSize = "&pageSize=" + $("#pageSize").val();
             	
-            	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + pageCount + searchType + searchKey);
+            	$("#aboard-list-container").load("/myweb/aboard/list?pageNo=" + pageCount + searchType + searchKey + pageSize);
             });
 
 			// 검색버튼 이벤트
@@ -102,7 +106,7 @@
 	                url: "/myweb/aboard/main",
 	                type: "GET",
 	                success: function (data, status, xhr) {
-	                	$("#aboard-list-container").load("/myweb/aboard/list?searchType=" + $("#searchType").val() + "&searchKey=" + $("#searchKey").val());
+	                	$("#aboard-list-container").load("/myweb/aboard/list?searchType=" + $("#searchType").val() + "&searchKey=" + $("#searchKey").val() + "&pageSize=" + $("#pageSize").val());
 	                },
 	                error: function (xhr, status, err) {
 	                    alert('검색 실패');
