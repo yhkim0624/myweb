@@ -19,7 +19,7 @@
 		position: relative;
 		left: 5%;
 		width: 20%;
-		height: 72%;
+		height: 63%;
 		border: solid;
 		overflow: scroll;
 	}
@@ -29,7 +29,7 @@
 		position: relative;
 		left: -4.8%;
 		width: 70%;
-		height: 80%;
+		height: 70%;
 	}
 	
 	#messageArea {
@@ -57,6 +57,7 @@
 			
 			<div id="userboard">
 				<h2>접속중인 멤버</h2>
+				<div id="userList"></div>
 			</div>
 			
 			<div id="chat">
@@ -86,10 +87,6 @@
 		let sock = new SockJS("/myweb/echo");
 		sock.onmessage = onMessage;
 		sock.onclose = onClose;
-
-		sock.onopen = function() {
-			sock.send($("#memberId").val());
-		}
 		
 		// 메시지 전송
 		function sendMessage() {
@@ -99,12 +96,19 @@
 		// 서버로부터 메시지를 받았을 때
 		function onMessage(msg) {
 			var data = msg.data;
-			console.log(msg);
-			if (data.includes(':')) {
+			
+			if (data.startsWith("{")) {	// 접속멤버리스트용 json data일 경우
+				console.log(data);
+				var jsonData = JSON.parse(data)
+				console.log(jsonData);
+				$("#userList").empty();
+				$.each(jsonData, function(key, value){
+				    console.log(value);
+				    $("#userList").append("<h3>" + value + "</h3>");
+				});
+			} else {	// 채팅용 message일 경우
 				$("#messageArea").append("<h2>" + data + "</h2>");
 				$('#messageArea').scrollTop($('#messageArea')[0].scrollHeight);
-			} else {
-				console.log(data);
 			}
 		}
 		

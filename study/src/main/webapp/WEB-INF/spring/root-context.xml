@@ -54,5 +54,7 @@
 	<bean id="chartService"
 		class="com.huation.myweb.service.ChartServiceImpl">
 	</bean>
+	
+	<import resource="scheduler-context.xml" />
 
 </beans>

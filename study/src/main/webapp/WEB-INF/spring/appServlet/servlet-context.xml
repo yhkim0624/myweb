@@ -36,8 +36,12 @@
 				class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
 	</beans:bean>
 	
+	<!-- 채팅용 WebsocketHandler 설정 -->
 	<websocket:handlers>
 		<websocket:mapping handler="echoHandler" path="/echo" />
+		<websocket:handshake-interceptors>
+			<beans:bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor" />
+		</websocket:handshake-interceptors>
 		<websocket:sockjs />
 	</websocket:handlers>
     
